@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Bienvenido - Opciones</title>
+    <link href="/Content/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/Content/dist/css/custom-themes.css" rel="stylesheet">
+    <style>
+        body{min-height:100vh; display:flex; flex-direction:column}
+        .topbar{height:70px;background:var(--theme-red-primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem}
+        .brand{font-weight:700;font-size:2rem}
+        .main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:3rem}
+        .big-btn{width:60%;padding:1.75rem;border-radius:12px;background:var(--theme-red-primary);color:#fff;font-weight:700;font-size:2rem;border:none;margin:1rem 0}
+        @media (max-width:768px){.big-btn{width:90%}}
+    </style>
+</head>
+<body class="theme-red">
+    <header class="topbar">
+        <div class="brand">BAC</div>
+        <div id="clock" style="font-weight:700;font-size:1.25rem">--:--</div>
+    </header>
+    <main class="main">
+        <h1 style="color:var(--theme-red-primary);font-weight:800;font-size:3rem">BIENVENIDO</h1>
+        <button class="big-btn">Caja</button>
+        <button class="big-btn">Atención al cliente</button>
+    </main>
+
+    <script>
+    function updateClock(){const d=new Date();const h=d.getHours().toString().padStart(2,'0');const m=d.getMinutes().toString().padStart(2,'0');document.getElementById('clock').textContent = `${h}:${m} p.m.`;}updateClock();setInterval(updateClock,60000);
+    </script>
+</body>
+</html>

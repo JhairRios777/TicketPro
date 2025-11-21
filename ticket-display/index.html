@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ticket Display</title>
+    <link href="/Content/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/Content/dist/css/custom-themes.css" rel="stylesheet">
+    <style>
+        body{min-height:100vh;display:flex;flex-direction:column}
+        .topbar{height:70px;background:var(--theme-red-primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem}
+        .brand{font-weight:700;font-size:2rem}
+        .content{display:flex;flex:1;align-items:stretch}
+        /* Left: caja (columna fija) */
+        .left{flex:0 0 420px;padding:3rem;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+        /* Right: espacio principal (imagen o ticket grande) */
+        .right{flex:1;padding:2rem;display:flex;align-items:center;justify-content:center}
+        .ticket-title{font-size:3rem;font-weight:800;color:var(--theme-red-primary);}
+        .ticket-num{font-size:3rem;font-weight:800;color:var(--theme-red-primary);margin:1rem 0}
+        .ticket-list{list-style:none;padding:0;margin:0;font-size:2rem;color:var(--theme-red-primary);font-weight:800}
+        /* Tabla caja / tickets */
+        .table-caja td, .table-caja th{border-top:0;padding:0.5rem 0}
+        .table-tickets thead th{border-bottom:2px solid rgba(0,0,0,0.06)}
+        .table-tickets tbody td{vertical-align:middle}
+        @media (max-width:900px){
+            .content{flex-direction:column}
+            .left{flex:0 0 auto;width:100%}
+            .right{width:100%}
+        }
+        /* Layout específico: left 50% / right 50% (desktop) */
+        .td-left-col { flex: 0 0 50%; padding: 1rem; }
+        .td-right-col { flex: 0 0 50%; padding: 1rem; display:flex; align-items:flex-start; justify-content:center }
+
+        .image-placeholder {
+            width:100%;
+            height:calc(60vh - 60px); /* ajustar por la barra de monedas ahora visible */
+            background:var(--theme-red-primary);
+            border-radius:8px;
+            display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.5rem;
+        }
+
+        /* Barra de monedas visible debajo del header */
+        .currency-bar { height:60px; background:#fff; display:flex; align-items:center; justify-content:center; border-top:1px solid rgba(0,0,0,0.06); position:sticky; top:70px; z-index:1000; font-size:1.25rem; }
+        .currency-bar .rates { font-weight:800; color:var(--theme-red-primary); }
+
+        /* Textos más grandes para tabla y títulos */
+        .ticket-title { font-size:2.5rem !important; }
+        .ticket-num { font-size:3.5rem !important; }
+        .table-tickets tbody td { font-size:1.5rem; font-weight:800; }
+
+        @media (max-width:900px) {
+            .td-left-col, .td-right-col { flex: 0 0 auto; width:100%; }
+            .image-placeholder { height:30vh; }
+            /* Mostrar la tabla primero en móvil */
+            .td-right-col { order: -1; }
+        }
+    </style>
+</head>
+<body class="theme-red">
+    <header class="topbar" style="height:70px;background:var(--theme-red-primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;">
+        <div class="brand" style="font-weight:700;font-size:1.5rem">BAC</div>
+        <div id="clock" style="font-weight:700;font-size:1.1rem">--:--</div>
+    </header>
+
+    <div class="content-container" style="min-height:calc(100vh - 70px - 60px);display:flex;align-items:stretch;padding:1rem;margin-top:60px">
+        <!-- Left: cuadro rojo donde se colocará la imagen (75%) -->
+        <div class="td-left-col">
+            <div class="image-placeholder">IMAGEN</div>
+        </div>
+
+        <!-- Right: tabla de tickets (50%) -->
+        <div class="td-right-col">
+            <div style="width:100%;max-width:680px">
+                <div style="text-align:center;margin-bottom:0">
+                    <div class="ticket-title" style="color:var(--theme-red-primary);font-weight:900">TICKET</div>
+                    <div class="ticket-num" style="color:var(--theme-red-primary);">S-23</div>
+                </div>
+                <table class="table table-striped table-tickets" style="background:#fff;border-radius:8px;overflow:hidden;margin-top:1rem">
+                    <thead>
+                        <tr>
+                            <th style="width:70%;text-align:center;color:var(--theme-red-primary);">Próximos</th>
+                            <th style="width:30%;text-align:center;color:var(--theme-red-primary);">Caja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="h5" style="font-weight:800;color:#b71c29;text-align:center">C-14</td>
+                            <td class="h5" style="font-weight:800;color:var(--theme-red-primary);text-align:center">04</td>
+                        </tr>
+                        <tr>
+                            <td class="h5" style="font-weight:800;color:#b71c29;text-align:center">MC-02</td>
+                            <td class="h5" style="font-weight:800;color:var(--theme-red-primary);text-align:center">01</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de monedas (sticky) visible bajo el header -->
+    <div class="currency-bar">
+        <div class="rates">USD Compra: 540.00 | Venta: 548.00 &nbsp;&nbsp; | &nbsp;&nbsp; EUR Compra: 590.00 | Venta: 600.00</div>
+    </div>
+
+    <script>
+    function updateClock(){
+        const d=new Date();
+        const h=d.getHours().toString().padStart(2,'0');
+        const m=d.getMinutes().toString().padStart(2,'0');
+        document.getElementById('clock').textContent = `${h}:${m} p.m.`;
+    }
+    updateClock(); setInterval(updateClock,60000);
+    </script>
+</body>
+</html>

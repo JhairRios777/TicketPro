@@ -1,0 +1,62 @@
+1. Roles
+⦁id_rol
+⦁nombre
+⦁descripcion
+
+2. Sucursal
+⦁id_sucursal
+⦁nom_sucursal
+
+3. TipoClientes
+⦁id_tipo_cliente
+⦁descripcion
+
+4. Servicios
+⦁id_servicio
+⦁descripción
+
+5. PuestosAtencion
+⦁id_puesto_atencion
+⦁id_usuario
+⦁id_sucursal
+⦁nombre_puesto
+
+6. Usuarios
+⦁id_usuario
+⦁nombre
+⦁usuario
+⦁contrasenia
+⦁id_servicio
+⦁id_role
+⦁email
+⦁estado
+
+7. EstadosTickets
+⦁id_estado
+⦁descripcion
+
+8. Tickets
+⦁id_ticket
+⦁codigoticket
+⦁id_servicio
+⦁id_tipo_cliente
+⦁id_estado
+⦁id_usuario
+⦁fecha_hora
+
+9. HistorialTickets
+⦁id_historial
+⦁id_ticket
+⦁id_estado
+⦁id_usuario
+⦁fecha_hora
+⦁observacion
+
+10. Auditorias
+⦁id_registro
+⦁id_usuario
+⦁id_puesto_atencion
+⦁id_ticket
+⦁accion
+⦁detalles
+⦁fecha_hora

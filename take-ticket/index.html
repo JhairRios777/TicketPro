@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Tome su ticket</title>
+    <link href="/Content/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/Content/dist/css/custom-themes.css" rel="stylesheet">
+    <style>
+        body { display:flex; flex-direction:column; min-height:100vh; }
+        .topbar { height:70px; background:var(--theme-red-primary); color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 1rem; }
+        .topbar .brand { font-weight:700; font-size:2rem; }
+        .main { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+        .big-arrow { font-size:8rem; color:var(--theme-red-primary); margin-top:1rem }
+        .lead-text { font-size:3rem; font-weight:700; color:var(--theme-red-primary); }
+    </style>
+</head>
+<body class="theme-red">
+    <header class="topbar">
+        <div class="brand">BAC</div>
+        <div id="clock" style="font-weight:700; font-size:1.25rem">--:--</div>
+    </header>
+    <main class="main container text-center">
+        <div class="lead-text">Tome su ticket</div>
+        <div class="big-arrow">&#8595;</div>
+    </main>
+
+    <script>
+    function updateClock(){
+        const d=new Date();
+        const h=d.getHours().toString().padStart(2,'0');
+        const m=d.getMinutes().toString().padStart(2,'0');
+        document.getElementById('clock').textContent = `${h}:${m} p.m.`;
+    }
+    updateClock(); setInterval(updateClock,60000);
+    </script>
+</body>
+</html>
