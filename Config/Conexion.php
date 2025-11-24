@@ -9,7 +9,7 @@ class Conexion {
     private $user="root";
     private $password="";
     private $conn=null;
-    private $port="3307";
+    private $port="3306";
 
     public function __construct() {
 

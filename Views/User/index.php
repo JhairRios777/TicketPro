@@ -51,7 +51,7 @@
                         echo "<td>".$Value-> role_id."</td>";
                         echo "<td>".$Value-> status."</td>";
                         echo "<td>
-                        <a href='/User/Registry/".$Value->id."' class='btn btn-sm btn-primary'>Editar</a>
+                        <a type='button' data-bs-toggle=\"modal\" data-bs-target=\"#modalRegistryUser\" href='/User/Registry/".$Value->id."' class='btn btn-sm btn-primary'>Editar</a>
                         <a href='javascript:eliminar(".$Value->id.");' class='btn btn-sm btn-secondary'>Eliminar</a>
                         </td>";
                     echo "</tr>";

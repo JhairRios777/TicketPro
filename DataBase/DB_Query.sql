@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	service_id INT NOT NULL,
 	role_id INT NOT NULL,
 	email VARCHAR(150) NOT NULL,
+	phone VARCHAR(20) NOT NULL,
 	`status` ENUM('Active', 'Inactive') DEFAULT 'Active',
 	CONSTRAINT fk_user_service FOREIGN KEY (service_id) REFERENCES Services(id),
 	CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES Roles(id)
@@ -111,9 +112,9 @@ INSERT INTO Roles(`name`, description) VALUES ('General', 'Usuario para la vista
 INSERT INTO Services(`name`, description) VALUES ('Caja', 'Servicios de caja');
 INSERT INTO Services(`name`, description) VALUES ('Atención al Cliente', 'Atención al cliente');
 
-INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, `status`) VALUES ('Jhair Rios', 'jrios', '1234', 1, 1, 'jrios@bac.hn', 'Active');
-INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, `status`) VALUES ('Jorge Vallecillo', 'jvallecillo', '1234', 2, 2, 'jvallecillo@bac.hn', 'Active');
-INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, `status`) VALUES ('Cliente', 'cliente', '1234', 1, 3, 'cliente@bac.hn', 'Active');
-INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, `status`) VALUES ('General', 'general', '1234', 1, 4, 'general@bac.hn', 'Active');
+INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('Jhair Rios', 'jrios', '1234', 1, 1, 'jrios@bac.hn', '9999-9999', 'Active');
+INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('Jorge Vallecillo', 'jvallecillo', '1234', 2, 2, 'jvallecillo@bac.hn', '8888-8888', 'Active');
+INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('Cliente', 'cliente', '1234', 1, 3, 'cliente@bac.hn', '0000-0000', 'Active');
+INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('General', 'general', '1234', 1, 4, 'general@bac.hn', '0000-0001', 'Active');
 
 SELECT * FROM Users;
