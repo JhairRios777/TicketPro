@@ -1,11 +1,11 @@
 <?php
 namespace config;
 
-//$conn = new Conexion("ProyectoPHP");
+//$conn = new Conexion("TicketPro");
 
 class Conexion {
     private $host="localhost";
-    private $db_name="ProyectoPHP";
+    private $db_name="TicketPro";
     private $user="root";
     private $password="";
     private $conn=null;

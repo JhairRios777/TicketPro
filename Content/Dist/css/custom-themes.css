@@ -37,10 +37,10 @@
     --theme-orange-sidebar-end: #dc6502;
 
     /* Tema Rojo (valores originales) */
-    --theme-red-primary: #dc3545;
-    --theme-red-hover: #bb2d3b;
-    --theme-red-sidebar-start: #dc3545;
-    --theme-red-sidebar-end: #bb2d3b;
+    --theme-red-primary: #e7002e;
+    --theme-red-hover: #b30023;
+    --theme-red-sidebar-start: #e7002e;
+    --theme-red-sidebar-end: #b30023;
 }
 
 /* Estilos base */
@@ -51,6 +51,27 @@ body {
     transition: background-color var(--transition-speed), color var(--transition-speed);
     overflow-x: hidden;
 }
+
+.img-logo-selection {
+    height: 70px;
+}
+
+.big-arrow {
+    font-size: 8rem;
+    color: var(--theme-red-primary);
+    margin-top: 1rem;
+}
+
+.big-arrow {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-30px); }
+    60% { transform: translateY(-15px); }
+}
+
 
 /* Sidebar lateral */
 .sidebar {
