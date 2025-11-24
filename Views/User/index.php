@@ -30,11 +30,11 @@
                 <tr>
                     <th width="10%">Usuario</th>
                     <th>Nombre Completo</th>
-                    <th width="20%">Correo</th>
+                    <th width="15%">Correo</th>
                     <th width="10%">Teléfono</th>
-                    <th width="10%">Servicio</th>
+                    <th width="20%">Servicio</th>
                     <th width="10%">Rol</th>
-                    <th width="15%">Estado</th>
+                    <th width="10%">Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -46,7 +46,7 @@
                         echo "<td>".$Value-> username."</td>";
                         echo "<td>".$Value-> name."</td>";
                         echo "<td>".$Value-> email."</td>";
-                        echo "<td>".$Value-> email."</td>";
+                        echo "<td>".$Value-> phone."</td>";
                         echo "<td>".$Value-> service_id."</td>";
                         echo "<td>".$Value-> role_id."</td>";
                         echo "<td>".$Value-> status."</td>";
@@ -112,7 +112,10 @@
             </div>
             <div class="mb-3">
                 <label for="status" class="form-label">Estado</label>
-                <input type="text" class="form-control" id="status" name="status" required>
+                <select name="status" id="status" class="form-control" required>
+                    <option value="Active">Activo</option>
+                    <option value="Inactive">Inactivo</option>
+                </select>
             </div>
         </form>
       </div>

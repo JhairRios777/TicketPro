@@ -10,11 +10,12 @@ class Conexion {
     private $password="";
     private $conn=null;
     private $port="3306";
+    private $charset="utf8mb4";
 
     public function __construct() {
 
         try {
-            $this->conn = new \PDO("mysql:host=".$this->host.";port=".$this->port.";dbname=".$this->db_name, $this->user, $this->password);
+            $this->conn = new \PDO("mysql:host=".$this->host.";port=".$this->port.";dbname=".$this->db_name.";charset=".$this->charset, $this->user, $this->password);
 
             //echo "Conexión Exitosa...";
 

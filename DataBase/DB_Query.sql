@@ -1,5 +1,7 @@
 CREATE DATABASE IF NOT EXISTS TicketPro;
-
+	DEFAULT CHARACTER SET utf8mb4
+	DEFAULT COLLATE utf8mb4_unicode_ci;
+	
 USE TicketPro;
 
 /*Tabla de Roles*/
@@ -118,3 +120,4 @@ INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phon
 INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('General', 'general', '1234', 1, 4, 'general@bac.hn', '0000-0001', 'Active');
 
 SELECT * FROM Users;
+SELECT * FROM Services;
