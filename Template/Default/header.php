@@ -65,7 +65,7 @@ include_once __DIR__ . '/../../Config/Conexion.php';
                                                         <i class="fas fa-cog me-2"></i> Configuración
                                                 </a></li>
                                                 <li><hr class="dropdown-divider"></li>
-                                                <li><a class="dropdown-item" href="#">
+                                                <li><a class="dropdown-item" href="/Login?op=exit">
                                                         <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                                                 </a></li>
                                         </ul>

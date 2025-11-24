@@ -1,10 +1,10 @@
 <?php
-// Definir rutas centralizadas de assets (puedes cambiarlas aquí)
-if (!defined('ROOT')) {
-    define('ROOT', realpath(__DIR__ . '/..'));
-}
-if (!defined('DIST_BASE_URL')) define('DIST_BASE_URL', '/Content/dist');
-if (!defined('DIST_PATH')) define('DIST_PATH', ROOT . '/Content/Dist');
+// // Definir rutas centralizadas de assets (puedes cambiarlas aquí)
+// if (!defined('ROOT')) {
+//     define('ROOT', realpath(__DIR__ . '/..'));
+// }
+// if (!defined('DIST_BASE_URL')) define('DIST_BASE_URL', '/Content/dist');
+// if (!defined('DIST_PATH')) define('DIST_PATH', ROOT . '/Content/Dist');
 
 $template = new Template();
 

@@ -9,11 +9,12 @@ class Conexion {
     private $user="root";
     private $password="";
     private $conn=null;
+    private $port="3307";
 
     public function __construct() {
 
         try {
-            $this->conn = new \PDO("mysql:host=".$this->host.";dbname=".$this->db_name, $this->user, $this->password);
+            $this->conn = new \PDO("mysql:host=".$this->host.";port=".$this->port.";dbname=".$this->db_name, $this->user, $this->password);
 
             //echo "Conexión Exitosa...";
 

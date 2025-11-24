@@ -1,3 +1,45 @@
+<?php
+    session_start();
+
+    require_once "Define.php";
+    require_once "Config\Conexion.php";
+    require_once 'Entity\eUser.php';
+    require_once "Models\User.php";
+
+    use Models\User as User;
+    $user = new User();
+
+    $username = "";
+
+    if(isset($_GET["op"])) {
+      if($_GET["op"]=="exit"){
+        session_destroy();
+        header("Location: /Login");
+        exit();
+      }
+    }
+
+    if(isset($_POST) && isset($_POST['username'])){
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        $data = $user->forUserName($username, $password);
+        //echo json_encode($data);
+
+        if($data) {
+          $_SESSION["system"]["username"]=$data->username;
+          $_SESSION["system"]["name"]=$data->name;
+        }
+
+        
+    }
+
+    if(isset($_SESSION["system"]["username"])) {
+      //echo "Sesión iniciada";
+      header("Location: /");
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -35,13 +77,13 @@
 
             <!-- Formulario de login -->
             <div class="login-card">
-                <form id="loginForm">
+                <form id="loginForm" method="post">
                     <!-- Campo de usuario -->
                     <div class="form-floating-modern mb-4">
                         <div class="input-wrapper">
                             <i class="input-icon fas fa-user"></i>
-                            <input type="text" class="form-control-modern" id="username" 
-                                  placeholder=" " required autofocus>
+                            <input type="text" class="form-control-modern" id="username" name="username"
+                                 value="<?php echo $username ?>" required>
                             <label for="username" class="floating-label">Usuario</label>
                             <div class="input-line"></div>
                         </div>
@@ -51,27 +93,13 @@
                     <div class="form-floating-modern mb-4">
                         <div class="input-wrapper">
                             <i class="input-icon fas fa-lock"></i>
-                            <input type="password" class="form-control-modern" id="password" 
-                                  placeholder=" " required>
+                            <input type="password" class="form-control-modern" id="password" name="password" required>
                             <label for="password" class="floating-label">Contraseña</label>
                             <div class="input-line"></div>
                             <button class="btn-toggle-password" type="button" id="togglePassword" tabindex="-1">
                                 <i class="fas fa-eye" id="eyeIcon"></i>
                             </button>
                         </div>
-                    </div>
-
-                    <!-- Recordar sesión y olvidé contraseña -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="rememberMe">
-                            <label class="form-check-label" for="rememberMe">
-                                Recordar sesión
-                            </label>
-                        </div>
-                        <a href="#" class="text-decoration-none forgot-password">
-                            ¿Olvidaste tu contraseña?
-                        </a>
                     </div>
 
                     <!-- Botón de login -->
@@ -82,31 +110,8 @@
                         <span class="btn-loader"></span>
                     </button>
 
-                    <!-- Divider -->
-                    <div class="divider my-4">
-                        <span>o</span>
-                    </div>
 
-                    <!-- Botones sociales (opcional) -->
-                    <div class="social-login">
-                        <button type="button" class="btn btn-social btn-google w-100 mb-3">
-                            <i class="fab fa-google"></i>
-                            <span>Continuar con Google</span>
-                        </button>
-                        <button type="button" class="btn btn-social btn-microsoft w-100">
-                            <i class="fab fa-microsoft"></i>
-                            <span>Continuar con Microsoft</span>
-                        </button>
-                    </div>
                 </form>
-            </div>
-
-            <!-- Footer del login -->
-            <div class="login-footer text-center mt-4">
-                <p class="text-muted mb-0">
-                    ¿No tienes una cuenta? 
-                    <a href="#" class="text-decoration-none">Regístrate aquí</a>
-                </p>
             </div>
         </div>
     </div>
@@ -114,8 +119,8 @@
     <!-- Bootstrap JS Bundle -->
     <script src="Content/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Custom JS para login -->
-    <script src="Content/dist/js/login.js"></script>
+    <!-- Custom JS para login 
+    <script src="Content/dist/js/login.js"></script>-->
     
     <!-- Custom JS para tema oscuro en login -->
     <script src="Content/dist/js/login-theme.js"></script>

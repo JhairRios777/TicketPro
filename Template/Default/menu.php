@@ -16,7 +16,7 @@
                     "Inicio" => array(
                         "Id" => 1,
                         "Nombre" => "Inicio",
-                        "Url" => "/",
+                        "Url" => "../../Views/Home/index.php",
                         "Icono" => "fas fa-home"
                     ),
                     "Dashboard" => array(
