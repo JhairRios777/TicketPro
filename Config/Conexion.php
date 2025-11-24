@@ -1,32 +1,32 @@
 <?php
+namespace config;
 
- namespace Config;
+//$conn = new Conexion("ProyectoPHP");
 
-$conn= new \Config\Conexion("ControlTickets");
-class Conexion{
+class Conexion {
     private $host="localhost";
-    private $dbName="ControlTickets";
+    private $db_name="ProyectoPHP";
     private $user="root";
-    private $pwd="";
+    private $password="";
     private $conn=null;
 
-    public function __construct()
-    {
-        try{
-            $this->conn = 
-            new \PDO("mysql:host=".$this->host.";dbname=".$this->dbName, $this->user, $this->pwd);
+    public function __construct() {
 
-            //echo "Conexion exitosa";
-        }catch(\Throwable $th){
-            die("Conexion Fallida...".$th->getMessage());  
+        try {
+            $this->conn = new \PDO("mysql:host=".$this->host.";dbname=".$this->db_name, $this->user, $this->password);
+
+            //echo "Conexión Exitosa...";
+
+        } catch (\Throwable $th) {
+            die("Conexión Fallida... ".$th->getMessage());
         }
 
+        
     }
 
-    //metodo para obtener la conexion
-
-    public function getConexion(){
+    public function getConexion() {
         return $this->conn;
     }
 }
+
 ?>
