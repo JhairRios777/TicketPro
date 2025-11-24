@@ -101,14 +101,14 @@
             </div>
             <div class="mb-3">
                 <label for="role_id" class="form-label">Rol</label>
-                <section name="role_id" class="form-control" id="role_id">
+                <select name="role_id" class="form-control" id="role_id">
                     <?php
                         foreach($roles as $key => $value) {
                             $selected = ($JData->role_id == $role->id) ? 'selected' : '';
                             echo "<option value='".$value->id."' $selected>".$value->name."</option>";
                         }
                     ?>
-                </section>
+                </select>
             </div>
             <div class="mb-3">
                 <label for="status" class="form-label">Estado</label>
