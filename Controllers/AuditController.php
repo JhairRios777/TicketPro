@@ -57,6 +57,23 @@
             $pdf = new \FPDF('P','mm','A4');
             $pdf->SetMargins(15, 15, 15);
             $pdf->AddPage();
+
+            // Add logo from Ideas/ folder if available (supported: PNG, JPG)
+            $logoPathPng = ROOT . 'Ideas' . DS . 'logo.png';
+            $logoPathJpg = ROOT . 'Ideas' . DS . 'logo.jpg';
+            $logoPath = '';
+            if (is_readable($logoPathPng)) {
+                $logoPath = $logoPathPng;
+            } elseif (is_readable($logoPathJpg)) {
+                $logoPath = $logoPathJpg;
+            }
+            if (!empty($logoPath)) {
+                // x=15mm (left margin), y=8mm, width=30mm (auto height)
+                $pdf->Image($logoPath, 15, 8, 30);
+                // move cursor down so title doesn't overlap the logo
+                $pdf->Ln(12);
+            }
+
             $pdf->SetFont('Arial','B',14);
             $pdf->Cell(0,10, utf8_decode('Reporte de Auditoría #'.$audit->id), 0, 1, 'C');
             $pdf->Ln(4);
@@ -82,7 +99,7 @@
             $pdf->Cell(0,7,utf8_decode($ticketLabel),0,1);
 
             $pdf->SetFont('Arial','B',10);
-            $pdf->Cell(40,7,'Acción:',0,0);
+            $pdf->Cell(40,7,'Accion:',0,0);
             $pdf->SetFont('Arial','',10);
             $pdf->Cell(0,7,utf8_decode($audit->action),0,1);
 
