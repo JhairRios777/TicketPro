@@ -21,9 +21,7 @@ class Conexion {
 
         } catch (\Throwable $th) {
             die("Conexión Fallida... ".$th->getMessage());
-        }
-
-        
+        } 
     }
 
     public function getConexion() {
