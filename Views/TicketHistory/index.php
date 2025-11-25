@@ -8,12 +8,11 @@
         <table class="table table-actions table-striped table-hover mb-0">
             <thead>
                 <tr>
-                    <th width="20%">Ticket</th>
-                    <th>Estado</th>
-                    <th>Usuario</th>
-                    <th>Fecha y Hora</th>
-                    <th>observaciones</th>
-                    <th>Acciones</th>
+                    <th width="12%">Ticket</th>
+                    <th width="12%">Estado</th>
+                    <th width="15%">Usuario</th>
+                    <th width="20%">Fecha y Hora</th>
+                    <th width="30%">Observaciones</th>
                 </tr>
             </thead>
 

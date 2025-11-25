@@ -1,7 +1,7 @@
 <?php
     namespace entity;
 
-    class eTicketHistory {
+    class eTicketStatus {
         public $id;
         public $name;
         public $description;

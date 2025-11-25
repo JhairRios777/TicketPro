@@ -1,38 +1,34 @@
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Información de la Sucursal</h5>
+<div class="row">
+        <div class="col-md-6">
+            <div class="card-mb-grid">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header-title"><h3>Registro de Sucursal</h3></div>
                 </div>
-                <div class="card-body">
-                    <form id="formRegistryBranch" method="post">
 
-                        <div class="mb-4">
-                            <label for="inputBranchName" class="form-label">Nombre de la Sucursal</label>
-                            <input type="text" class="form-control" id="inputBranchName" name="name" placeholder="Ej: Sucursal Centro, Sucursal Norte" required>
+                <div class="card-body collapse show">
+                    <form action="" method="POST">
+
+                        <input type="hidden" name="Registrar" id="Registrar" value="1">
+
+                        <div class="form-group">
+                            <input require type="text" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
+                        </div> <br>
+                        
+                        <div class="form-group">
+                            <label for="branch_name" class="form-label">Nombre de la Sucursal</label>
+                            <input placeholder="Ej: Sucursal Centro, Sucursal Norte" type="text" name="branch_name" id="branch_name" class="form-control" value="<?php echo $JData->branch_name; ?>">
+                        </div> <br>
+                        
+                        <div class="form-group">
+                            <label for="location" class="form-label">Ubicación</label>
+                            <input placeholder="Ej: Calle 123, San Pedro Sula" rows="4" type="text" name="location" id="location" class="form-control" value="<?php echo $JData->location; ?>">
+                        </div> <br>
+
+                        <div class="form-group">
+                            <a href="/Branch" class="btn btn-secondary">Regresar</a>
+                            <button type="submit" class="btn btn-primary">Aceptar</button>
                         </div>
 
-
-                        <div class="mb-4">
-                            <label for="inputDescription" class="form-label">Ubicación</label>
-                            <textarea class="form-control" id="inputDescription" name="description" rows="4" placeholder="Describe la ubicación de esta sucursal"></textarea>
-                        </div>
-
-
-                        <div class="d-flex gap-2 justify-content-end">
-                            <a href="/Branch" class="btn btn-secondary">
-                                <i class="fas fa-times me-2"></i>Cancelar
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Guardar Sucursal
-                            </button>
-                        </div>
                     </form>
                 </div>
             </div>

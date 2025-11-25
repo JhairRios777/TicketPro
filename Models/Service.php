@@ -42,7 +42,7 @@
             $sql = "call SP_Service (";
             $sql .= "'".$entity->id."', ";
             $sql .= "'".$entity->name."', ";
-            $sql .= "'".$entity->description."', ";
+            $sql .= "'".$entity->description."'";
             $sql .= ");";
 
             $stmt = $this->Conexion->prepare($sql);

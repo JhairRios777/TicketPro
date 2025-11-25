@@ -1,43 +1,68 @@
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-        </div>
-    </div>
+<?php
+    use Models\User as User;
+    use Models\Branch as Branch;
 
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Información de la Estación</h5>
-                </div>
-                <div class="card-body">
-                    <form id="formRegistryServiceDesk" method="post">
+    $users = new User();
+    $users = $users->toList();
 
-                        <div class="mb-4">
-                            <label for="inputServiceName" class="form-label">Nombre de la Estación</label>
-                            <input type="text" class="form-control" id="inputServiceName" name="name" placeholder="Caja, Preferencial, Atención al Cliente" required>
-                        </div>
+    $branches = new Branch();
+    $branches = $branches->toList();
+    //echo json_encode($branches);
+?>
 
-                        <div class="mb-4">
-                            <label for="inputServiceName" class="form-label">Sucursal</label>
-                            <input type="text" class="form-control" id="inputServiceName" name="name" placeholder="Ej: Santa Barbara, San Pedro, Tegus" required>
-                        </div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title"><h3>Información de la Estación</h3></div>
+            </div>
 
-                        <div class="mb-4">
-                            <label for="inputServiceName" class="form-label">Nombre de la Estación</label>
-                            <input type="text" class="form-control" id="inputServiceName" name="name" placeholder="Ej: caja, Preferenccial, Atencion al Cliente" required>
-                        </div>
+            <div class="card-body collapse show">
+                <form action="" method="POST">
 
-                        <div class="d-flex gap-2 justify-content-end">
-                            <a href="/Role" class="btn btn-secondary">
-                                <i class="fas fa-times me-2"></i>Cancelar
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Guardar Rol
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <input type="hidden" name="Registrar" id="Registrar" value="1">
+
+                    <div class="form-group">
+                        <input require type="text" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
+                    </div> <br>
+
+                    <div class="form-group">
+                        <label for="desk_name" class="form-label">Nombre de la Estación</label>
+                        <input type="text" name="desk_name" id="desk_name" class="form-control" placeholder="Nombre de la Estación" value="<?php echo $JData->desk_name; ?>">
+                    </div> <br>
+
+                    <div class="form-group">
+                        <label for="user_id" class="form-label">Usuario asignado</label>
+                        <select name="user_id" id="user_id"  class="form-select">
+                            <?php
+                                foreach($users as $key => $value) {
+                                    $selected = ($JData->user_id == $user->id) ? 'selected' : '';
+                                    echo "<option value='".$value->id."' $selected>".$value->name."</option>";
+                                }
+                            ?>
+                        </select>
+                    </div> <br>
+
+                    <div class="form-group">
+                        <label for="branch_id" class="form-label">Sucursal</label>
+                        <select name="branch_id" id="branch_id" class="form-select">
+                            <?php
+                                foreach($branches as $key => $value) {
+                                    $selected = ($JData->branch_id == $branch->id) ? 'selected' : '';
+                                    echo "<option value='".$value->id."' $selected>".$value->branch_name."</option>";
+                                }
+                            ?>
+                        </select>
+                    </div> <br>
+
+                    <div class="form-group">
+                        <a href="/ServiceDesk" class="btn btn-secondary">Regresar</a>
+                        <button type="submit" class="btn btn-primary">Aceptar</button>
+                    </div>
+
+                    
+
+                </form>
             </div>
         </div>
     </div>

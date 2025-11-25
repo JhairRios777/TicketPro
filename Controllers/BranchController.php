@@ -1,6 +1,7 @@
 <?php
     namespace Controllers;
     use Models\Branch as Branch;
+    use Entity\eBranch as eBranch;
 
     class BranchController {
         private $branchModel;
@@ -12,6 +13,34 @@
         public function index() {
             $branches = $this->branchModel->toList();
             return $branches;  
+        }
+
+        public function Registry($id) {
+            $success = true;
+            if (isset($_POST) && isset($_POST['Registrar'])) {
+                $branch = new eBranch();
+
+                foreach ($_POST as $key => $value) {
+                    $branch->$key = $value;
+                }
+
+                if (empty($branch->branch_name)) {
+                    echo '<div class="alert alert-danger" role="alert">El nombre de la sucursal es obligatorio</div>';
+                    $success = false;
+                }
+
+                $this->branchModel->save($branch);
+                return $branch;
+            }
+
+            $data = $this->branchModel->getForId($id); 
+            
+            if (!$data) {
+                $data = new eBranch();
+                $data->id = $this->branchModel->getNewId();
+            }
+
+            return $data;
         }
     }
 ?>
