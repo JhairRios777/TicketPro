@@ -39,7 +39,7 @@
             }
         }
         public function save($entity){
-            $sql = "call TicketHistory (";
+            $sql = "call SP_TicketHistory (";
             $sql .= "'".$entity->id."', ";
             $sql .= "'".$entity->ticket_id."', ";
             $sql .= "'".$entity->status_id."', ";

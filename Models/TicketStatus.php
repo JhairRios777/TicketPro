@@ -39,7 +39,7 @@
             }
         }
         public function save($entity){
-            $sql = "call TicketStatuses (";
+            $sql = "call SP_TicketStatus (";
             $sql .= "'".$entity->id."', ";
             $sql .= "'".$entity->name."', ";
             $sql .= "'".$entity->description."'";
