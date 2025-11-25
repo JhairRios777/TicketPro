@@ -1,0 +1,1 @@
+2025-11-25 05:48:57 - Models\User::save error: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'admin' for key 'username'

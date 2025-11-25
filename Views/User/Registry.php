@@ -23,7 +23,7 @@
                     <input type="hidden" name="Registrar" id="Registrar" value="1">
 
                     <div class="form-group">
-                        <input require type="hidden" name="Id" id="Id" class="form-control" readonly value="<?php echo $JData->id; ?>">
+                        <input require type="hidden" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
                     </div>
 
                     <div class="form-group">
