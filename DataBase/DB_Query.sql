@@ -106,4 +106,18 @@ CREATE TABLE Audits (
     CONSTRAINT fk_audit_ticket FOREIGN KEY (ticket_id) REFERENCES Tickets(id)
 );
 
+INSERT INTO Roles(`name`, description) VALUES ('Administrador', 'Administrador en el sistema');
+INSERT INTO Roles(`name`, description) VALUES ('Empleado', 'Empleado del banco');
+INSERT INTO Roles(`name`, description) VALUES ('Cliente', 'Usuario para la vista de los clientes');
+INSERT INTO Roles(`name`, description) VALUES ('General', 'Usuario para la vista donde se muestran la cola de tickets');
 
+INSERT INTO Services(`name`, description) VALUES ('Caja', 'Servicios de caja');
+INSERT INTO Services(`name`, description) VALUES ('Atención al Cliente', 'Atención al cliente');
+
+INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('Jhair Rios', 'jrios', '1234', 1, 1, 'jrios@bac.hn', '9999-9999', 'Active');
+INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('Jorge Vallecillo', 'jvallecillo', '1234', 2, 2, 'jvallecillo@bac.hn', '8888-8888', 'Active');
+INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('Cliente', 'cliente', '1234', 1, 3, 'cliente@bac.hn', '0000-0000', 'Active');
+INSERT INTO Users(`name`, username, `password`, service_id, role_id, email, phone, `status`) VALUES ('General', 'general', '1234', 1, 4, 'general@bac.hn', '0000-0001', 'Active');
+
+SELECT * FROM Users;
+SELECT * FROM Services;
