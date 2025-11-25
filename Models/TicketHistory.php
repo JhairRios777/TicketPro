@@ -12,10 +12,44 @@
         }
 
         public function toList() {
-            $sql = "SELECT * FROM TicketHistories";
+            $sql = "SELECT * FROM TicketHistory";
             $stmt = $this->Conexion->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_OBJ);
+        }
+
+         public function getForId($id){
+            $sql = "SELECT * FROM TicketHistory WHERE id = :id";
+            $stmt = $this->Conexion->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+            return $stmt->fetch(\PDO::FETCH_OBJ);
+        }
+
+        public function getNewId(){
+            $sql = "SELECT * FROM TicketHistory ORDER BY id DESC LIMIT 0,1";
+            $stmt = $this->Conexion->prepare($sql);
+            $stmt->execute();
+            $data = $stmt->fetch(\PDO::FETCH_OBJ);
+
+            if(!$data){
+                return "1";
+            } else {
+                return intval($data->id) + 1;
+            }
+        }
+        public function save($entity){
+            $sql = "call TicketHistory (";
+            $sql .= "'".$entity->id."', ";
+            $sql .= "'".$entity->ticket_id."', ";
+            $sql .= "'".$entity->status_id."', ";
+            $sql .= "'".$entity->user_id."', ";
+            $sql .= "'".$entity->date_time."', ";
+            $sql .= "'".$entity->observation."'";
+            $sql .= ");";
+
+            $stmt = $this->Conexion->prepare($sql);
+            $stmt->execute();
         }
 
     }
