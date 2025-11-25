@@ -16,27 +16,69 @@
                     "Inicio" => array(
                         "Id" => 1,
                         "Nombre" => "Inicio",
-                        "Url" => "../../Views/Home/index.php",
+                        "Url" => "/Home",
                         "Icono" => "fas fa-home"
                     ),
-                    "Dashboard" => array(
+                    "Tickets" => array(
                         "Id" => 2,
-                        "Nombre" => "Dashboard",
-                        "Url" => "#/dashboard",
-                        "Icono" => "fas fa-chart-line"
+                        "Nombre" => "Tickets",
+                        "Url" => "/Ticket",
+                        "Icono" => "fas fa-ticket-alt"
                     ),
                     "Usuarios" => array(
                         "Id" => 3,
                         "Nombre" => "Usuarios",
-                        "Url" => "#/usuarios",
+                        "Url" => "/User",
                         "Icono" => "fas fa-users"
                     ),
-                    "Configuracion" => array(
+                    "Auditorias" => array(
                         "Id" => 4,
-                        "Nombre" => "Configuración",
-                        "Url" => "#/configuracion",
+                        "Nombre" => "Auditorias",
+                        "Url" => "/Audit",
                         "Icono" => "fas fa-cog"
                     ),
+                    "Roles" => array(
+                        "Id" => 5,
+                        "Nombre" => "Roles",
+                        "Url" => "/Role",
+                        "Icono" => "fas fa-shield-alt"
+                    ),
+                    "Servicios" => array(
+                        "Id" => 6,
+                        "Nombre" => "Servicios",
+                        "Url" => "/Service",
+                        "Icono" => "fas fa-briefcase"
+                    ),
+                    "Mesa de Servicio" => array(
+                        "Id" => 7,
+                        "Nombre" => "Mesa de Servicio",
+                        "Url" => "/ServiceDesk",
+                        "Icono" => "fas fa-headset"
+                    ),
+                    "Ramas" => array(
+                        "Id" => 8,
+                        "Nombre" => "Ramas",
+                        "Url" => "/Branch",
+                        "Icono" => "fas fa-code-branch"
+                    ),
+                    "Tipos de Cliente" => array(
+                        "Id" => 9,
+                        "Nombre" => "Tipos de Cliente",
+                        "Url" => "/ClientType",
+                        "Icono" => "fas fa-layer-group"
+                    ),
+                    "Estados de Ticket" => array(
+                        "Id" => 10,
+                        "Nombre" => "Estados de Ticket",
+                        "Url" => "/TicketStatus",
+                        "Icono" => "fas fa-check-circle"
+                    ),
+                    "Historial de Tickets" => array(
+                        "Id" => 11,
+                        "Nombre" => "Historial de Tickets",
+                        "Url" => "/TicketHistory",
+                        "Icono" => "fas fa-history"
+                    )
                 );
 
                 if (!function_exists('getMenu')) {

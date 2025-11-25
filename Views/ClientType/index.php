@@ -1,0 +1,1 @@
+<h1>Vista Tipos de Cliente</h1>
