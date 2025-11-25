@@ -55,11 +55,11 @@
                         "Url" => "/ServiceDesk",
                         "Icono" => "fas fa-headset"
                     ),
-                    "Ramas" => array(
+                    "Sucursales" => array(
                         "Id" => 8,
-                        "Nombre" => "Ramas",
+                        "Nombre" => "Sucursales",
                         "Url" => "/Branch",
-                        "Icono" => "fas fa-code-branch"
+                        "Icono" => "fas fa-building"
                     ),
                     "Tipos de Cliente" => array(
                         "Id" => 9,
