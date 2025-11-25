@@ -58,7 +58,7 @@
             $sql .= "'".$entity->role_id."', ";
             $sql .= "'".$entity->email."', ";
             $sql .= "'".$entity->phone."', ";
-            $sql .= "'".$entity->status."', ";
+            $sql .= "'".$entity->status."'";
             $sql .= ");";
 
             $stmt = $this->Conexion->prepare($sql);

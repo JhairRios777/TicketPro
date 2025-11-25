@@ -23,8 +23,13 @@
                     <input type="hidden" name="Registrar" id="Registrar" value="1">
 
                     <div class="form-group">
-                        <input require type="hidden" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
-                    </div>
+                        <input require type="text" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
+                    </div> <br>
+
+                    <div class="form-group">
+                        <label for="name" class="form-label">Nombre Completo</label>
+                        <input type="text" name="name" id="name" class="form-control" value="<?php echo $JData->name; ?>">
+                    </div> <br>
 
                     <div class="form-group">
                         <label for="username" class="form-label">Usuario</label>
@@ -37,27 +42,11 @@
                     </div> <br>
 
                     <div class="form-group">
-                        <label for="name" class="form-label">Nombre Completo</label>
-                        <input type="text" name="name" id="name" class="form-control" value="<?php echo $JData->name; ?>">
-                    </div> <br>
-
-
-                    <div class="form-group">
-                        <label for="email" class="form-label">Correo</label>
-                        <input type="text" name="email" id="email" class="form-control" value="<?php echo $JData->email; ?>">
-                    </div> <br>
-
-                    <div class="form-group">
-                        <label for="phone" class="form-label">Teléfono</label>
-                        <input type="text" name="phone" id="phone" class="form-control" value="<?php echo $JData->phone; ?>">
-                    </div> <br>
-
-                    <div class="form-group">
                         <label for="service_id" class="form-label">Servicio</label>
                         <select name="service_id" id="service_id"  class="form-select">
                             <?php
                                 foreach($services as $key => $value) {
-                                    $selected = ($JData->service_id == $value->id) ? 'selected' : '';
+                                    $selected = ($JData->service_id == $service->id) ? 'selected' : '';
                                     echo "<option value='".$value->id."' $selected>".$value->name."</option>";
                                 }
                             ?>
@@ -69,11 +58,21 @@
                         <select name="role_id" id="role_id" class="form-select">
                             <?php
                                 foreach($roles as $key => $value) {
-                                    $selected = ($JData->role_id == $value->id) ? 'selected' : '';
+                                    $selected = ($JData->role_id == $role->id) ? 'selected' : '';
                                     echo "<option value='".$value->id."' $selected>".$value->name."</option>";
                                 }
                             ?>
                         </select>
+                    </div> <br>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">Correo</label>
+                        <input type="text" name="email" id="email" class="form-control" value="<?php echo $JData->email; ?>">
+                    </div> <br>
+
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Teléfono</label>
+                        <input type="text" name="phone" id="phone" class="form-control" value="<?php echo $JData->phone; ?>">
                     </div> <br>
 
                     <div class="form-group">

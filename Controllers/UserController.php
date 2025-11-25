@@ -33,7 +33,7 @@
                     $success = false;
                 }
 
-                //echo json_encode($user);
+                echo json_encode($user);
                 $this->userModel->save($user);
                 return $user;
             }
