@@ -57,6 +57,7 @@
             $sql .= "'".$entity->service_id."', ";
             $sql .= "'".$entity->role_id."', ";
             $sql .= "'".$entity->email."', ";
+            $sql .= "'".$entity->phone."', ";
             $sql .= "'".$entity->status."', ";
             $sql .= ");";
 

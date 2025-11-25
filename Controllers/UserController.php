@@ -17,7 +17,7 @@
             return $this->userModel->toList();  
         }
 
-        public function Registry($Id)
+        public function Registry($id)
         {
             $success = true;
             if(isset($_POST) && isset($_POST['Registrar'])){
@@ -28,7 +28,7 @@
                     //echo "$key : $value <br>";
                 }
 
-                if(empty($user->UserName)) {
+                if(empty($user->username)) {
                     echo '<div class="alert alert-danger" role="alert">El nombre de usuario es obligatorio</div>';
                     $success = false;
                 }
@@ -38,7 +38,7 @@
                 return $user;
             }
 
-            $data = $this->userModel->getForId($Id); 
+            $data = $this->userModel->getForId($id); 
             
             if(!$data) {
                 $data = new eUser();

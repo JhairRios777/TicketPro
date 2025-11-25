@@ -9,6 +9,7 @@
         public $service_id;
         public $role_id;
         public $email;
+        public $phone;
         public $status;
 
         public $Found;
