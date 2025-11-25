@@ -9,82 +9,7 @@
                     <p class="text-muted">Bienvenido al sistema de gestión de tickets</p>
                 </div>
                 <div>
-                    <span class="badge bg-success">En línea</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tarjetas de Estadísticas -->
-    <div class="row mb-4">
-        <!-- Tickets Totales -->
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card card-stat">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title text-muted mb-2">Tickets Totales</h6>
-                            <h3 class="mb-0">1,245</h3>
-                            <small class="text-success"><i class="fas fa-arrow-up"></i> 12% este mes</small>
-                        </div>
-                        <div class="stat-icon bg-primary">
-                            <i class="fas fa-ticket-alt"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tickets Abiertos -->
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card card-stat">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title text-muted mb-2">Abiertos</h6>
-                            <h3 class="mb-0">342</h3>
-                            <small class="text-warning"><i class="fas fa-hourglass-half"></i> Pendientes</small>
-                        </div>
-                        <div class="stat-icon bg-warning">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tickets Resueltos -->
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card card-stat">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title text-muted mb-2">Resueltos</h6>
-                            <h3 class="mb-0">892</h3>
-                            <small class="text-success"><i class="fas fa-check-circle"></i> Completados</small>
-                        </div>
-                        <div class="stat-icon bg-success">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Usuarios Activos -->
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card card-stat">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title text-muted mb-2">Sin Respuesta </h6>
-                            <h3 class="mb-0">58</h3>
-                            <small class="text-info"><i class="fas fa-user-slash"></i> Conectados</small>
-                        </div>
-                        <div class="stat-icon bg-info">
-                            <i class="fas fa-user-slash"></i>
-                        </div>
-                    </div>
+                    <a href="Views/ticket-display/index.html" target="_blank" class="btn btn-primary">Panel General</a>
                 </div>
             </div>
         </div>
@@ -98,18 +23,15 @@
                 // Datos estáticos de ejemplo (sin BD): cada elemento tiene id y caja
                 $normalTickets = [
                     ['id' => '1256', 'caja' => 'Caja 1'],
-                    ['id' => '1254', 'caja' => 'Caja 2'],
-                    ['id' => '1252', 'caja' => 'Caja 3']
                 ];
 
                 $customerTickets = [
-                    ['id' => '1255', 'caja' => 'Caja A'],
-                    ['id' => '1251', 'caja' => 'Caja B']
+                    ['id' => '1255', 'caja' => 'Caja A']
                 ];
 
                 $premiumTickets = [
-                    ['id' => '1250', 'caja' => 'Caja P1'],
-                    ['id' => '1248', 'caja' => 'Caja P2']
+                    ['id' => '1250', 'caja' => 'Caja P1']
+
                 ];
             ?>
 
@@ -131,14 +53,18 @@
                                     <thead>
                                         <tr>
                                             <th>#Ticket</th>
-                                            <th>Caja</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach($normalTickets as $tk){ ?>
                                             <tr>
                                                 <td><strong>#<?php echo $tk['id']; ?></strong></td>
-                                                <td><?php echo $tk['caja']; ?></td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
+                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>">Cerrar</button>
+                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>">Cambiar Servicio</button>
+                                                </td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>
@@ -172,7 +98,11 @@
                                         <?php foreach($customerTickets as $tk){ ?>
                                             <tr>
                                                 <td><strong>#<?php echo $tk['id']; ?></strong></td>
-                                                <td><?php echo $tk['caja']; ?></td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
+                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>">Cerrar</button>
+                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>">Cambiar Servicio</button>
+                                                </td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>
@@ -206,7 +136,11 @@
                                         <?php foreach($premiumTickets as $tk){ ?>
                                             <tr>
                                                 <td><strong>#<?php echo $tk['id']; ?></strong></td>
-                                                <td><?php echo $tk['caja']; ?></td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
+                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>">Cerrar</button>
+                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>">Cambiar Servicio</button>
+                                                </td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>
