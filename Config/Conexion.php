@@ -16,6 +16,8 @@ class Conexion {
 
         try {
             $this->conn = new \PDO("mysql:host=".$this->host.";port=".$this->port.";dbname=".$this->db_name.";charset=".$this->charset, $this->user, $this->password);
+            // throw exceptions on SQL errors to make debugging easier
+            $this->conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             
             //echo "Conexión Exitosa...";
 

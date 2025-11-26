@@ -30,7 +30,6 @@
             }
 
             require_once $fpdfPath;
-
             // load related labels (minimal, keep logic simple)
             $userName = '';
             try {
@@ -117,5 +116,50 @@
             $pdf->Output('D', 'auditoria_'.$audit->id.'.pdf');
             exit;
         }
+
+    public function Registry($id = '') {
+        // If the form was submitted, save the record and redirect
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Registrar'])) {
+            $entity = new \stdClass();
+            $entity->id = isset($_POST['id']) && $_POST['id'] !== '' ? $_POST['id'] : $id;
+            $entity->user_id = isset($_POST['user_id']) ? $_POST['user_id'] : '';
+            $entity->desk_id = isset($_POST['desk_id']) ? $_POST['desk_id'] : '';
+            $entity->ticket_id = isset($_POST['ticket_id']) ? $_POST['ticket_id'] : '';
+            $entity->action = isset($_POST['action']) ? $_POST['action'] : '';
+            $entity->details = isset($_POST['details']) ? $_POST['details'] : '';
+            // convert datetime-local (YYYY-MM-DDTHH:MM) to space-separated
+            $dt = isset($_POST['date_time']) ? $_POST['date_time'] : '';
+            if ($dt !== '') {
+                $entity->date_time = str_replace('T', ' ', $dt) . ':00';
+            } else {
+                $entity->date_time = '';
+            }
+
+            try {
+                $this->auditModel->save($entity);
+            } catch (\Exception $e) {
+                echo "Error guardando auditoría: " . htmlspecialchars($e->getMessage());
+                exit;
+            }
+            echo "<script>window.location.href='/Audit';</script>";
+            exit;
+        }
+
+        $result = $this->auditModel->getForId($id);
+        if ($result && is_object($result)) {
+            return $result;
+        }
+
+        $empty = new \stdClass();
+        $empty->id = $id ?: '';
+        $empty->user_id = '';
+        $empty->desk_id = '';
+        $empty->ticket_id = '';
+        $empty->action = '';
+        $empty->details = '';
+        $empty->date_time = '';
+        return $empty;
+    }
+
     }
 ?>
