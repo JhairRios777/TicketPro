@@ -24,11 +24,6 @@
                     $serviceDesk->$key = $value;
                 }
 
-                if(empty($serviceDesk->desk_name)) {
-                    echo '<div class="alert alert-danger" role="alert">El nombre de la estación de servicio es obligatorio</div>';
-                    $success = false;
-                }
-
                 $this->serviceDeskModel->save($serviceDesk);
                 return $serviceDesk;
             }

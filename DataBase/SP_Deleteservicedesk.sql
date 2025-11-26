@@ -1,8 +1,8 @@
 DELIMITER //
 CREATE PROCEDURE SP_Deleteservicedesk (
-	IN _Id INTEGER
+	IN _id INTEGER
 ) 
 BEGIN
 
-	DELETE FROM ServiceDesks WHERE Id=_Id;
+	DELETE FROM ServiceDesks WHERE id=_id;
 END //

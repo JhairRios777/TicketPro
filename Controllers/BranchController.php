@@ -24,11 +24,6 @@
                     $branch->$key = $value;
                 }
 
-                if (empty($branch->branch_name)) {
-                    echo '<div class="alert alert-danger" role="alert">El nombre de la sucursal es obligatorio</div>';
-                    $success = false;
-                }
-
                 $this->branchModel->save($branch);
                 return $branch;
             }

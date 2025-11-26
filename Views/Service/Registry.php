@@ -6,7 +6,7 @@
                 </div>
 
                 <div class="card-body collapse show">
-                    <form action="" method="POST">
+                    <form id="serviceForm" action="" method="POST">
                         <input type="hidden" name="Registrar" id="Registrar" value="1">
 
                         <div class="form-group">
@@ -34,3 +34,62 @@
         </div>
     </div>
 </div>
+
+<script>
+(function(){
+    const form = document.getElementById('serviceForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e){
+        e.preventDefault();
+
+        // VALIDACIÓN CLIENTE: campos obligatorios
+        const name = document.getElementById('name')?.value?.trim() || '';
+
+        if (!name) {
+            await Swal.fire('Error', 'El campo Nombre del Servicio es obligatorio.', 'error');
+            document.getElementById('name')?.focus();
+            return;
+        }
+
+        const confirm = await Swal.fire({
+            title: '¿Guardar cambios?',
+            text: 'Se guardarán los datos del servicio.',
+            icon: 'question',
+            confirmButtonColor: "#b70124",
+            cancelButtonColor: "#5c636a",
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar'
+        });
+        if (!confirm.isConfirmed) return;
+
+        const fd = new FormData(form);
+        fd.append('ajax', '1');
+
+        try {
+            const res = await fetch(form.action || window.location.pathname, {
+                method: 'POST',
+                body: fd,
+                credentials: 'same-origin'
+            });
+
+            const text = await res.text();
+            let data = null;
+            try { data = JSON.parse(text); } catch(e){ /* no JSON */ }
+
+            if (res.ok) {
+                const msg = data && data.message ? data.message : 'Servicio guardado correctamente.';
+                await Swal.fire('Éxito', msg, 'success');
+                window.location.href = (data && data.redirect) ? data.redirect : '/Service';
+            } else {
+                const errMsg = (data && data.message) ? data.message : (text || 'Error en el servidor');
+                Swal.fire('Error', errMsg, 'error');
+            }
+        } catch (err) {
+            console.error('Fetch error:', err);
+            Swal.fire('Error', 'Error en la petición. Revisa la consola.', 'error');
+        }
+    });
+})();
+</script>

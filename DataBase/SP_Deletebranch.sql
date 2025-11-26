@@ -1,0 +1,8 @@
+DELIMITER //
+CREATE PROCEDURE SP_Deletebranch (
+	IN _id INTEGER
+) 
+BEGIN
+
+	DELETE FROM Branches WHERE id=_id;
+END //

@@ -24,11 +24,6 @@
                     $service->$key = $value;
                 }
 
-                if(empty($service->name)) {
-                    echo '<div class="alert alert-danger" role="alert">El nombre del servicio es obligatorio</div>';
-                    $success = false;
-                }
-
                 $this->serviceModel->save($service);
                 return $service;
             }

@@ -22,11 +22,6 @@
                     $ticket->$key = $value;
                 }
 
-                if(empty($ticket->ticket_code)) {
-                    echo '<div class="alert alert-danger" role="alert">El código del ticket es obligatorio</div>';
-                    $success = false;
-                }
-
                 $this->ticketModel->save($ticket);
                 return $ticket;
             }

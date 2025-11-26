@@ -37,9 +37,9 @@
     --theme-orange-sidebar-end: #dc6502;
 
     /* Tema Rojo (valores originales) */
-    --theme-red-primary: #e7002e;
+    --theme-red-primary: #b60021;
     --theme-red-hover: #b30023;
-    --theme-red-sidebar-start: #e7002e;
+    --theme-red-sidebar-start: #b60021;
     --theme-red-sidebar-end: #b30023;
 }
 
@@ -53,7 +53,7 @@ body {
 }
 
 .img-logo-selection {
-    height: 70px;
+    height: 40px;
 }
 
 .big-arrow {
@@ -151,7 +151,7 @@ body {
 
 .sidebar.collapsed:hover .sidebar-nav .nav-link {
     justify-content: flex-start;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1.0rem;
 }
 
 .sidebar.collapsed:hover .sidebar-nav .nav-link i {
@@ -179,12 +179,12 @@ body {
 }
 
 .sidebar.collapsed:hover .sidebar-header {
-    padding: 1.5rem;
+    padding: 1.0rem;
     justify-content: space-between;
 }
 
 .sidebar-header {
-    padding: 1.5rem;
+    padding: 1.0rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
@@ -195,7 +195,7 @@ body {
 }
 
 .sidebar.collapsed .sidebar-header {
-    padding: 1.5rem 0.75rem;
+    padding: 1.0rem 0.75rem;
     justify-content: center;
 }
 

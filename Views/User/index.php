@@ -75,4 +75,39 @@
     </div>
 </div>
 
+<script>
+   function eliminar(id) {
+    Swal.fire({
+        title: "¿Está seguro?",
+        text: "¡No podrá revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#b70124",
+        cancelButtonColor: "#5c636a",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (!result.isConfirmed) return;
 
+        var data = { id: id, table: 'user'};
+
+        $.ajax({
+            url: "/API?method=Delete",
+            method: "POST",
+            data: data,
+            dataType: "json"
+        }).done(function(res) {
+            if (res && res.success) {
+                Swal.fire("Eliminado", res.message || "Registro eliminado correctamente.", "success")
+                    .then(() => location.reload());
+            } else {
+                Swal.fire("Error", res?.message || "Error al eliminar el registro.", "error");
+            }
+        }).fail(function(xhr) {
+            console.error("API error:", xhr);
+            const msg = xhr.responseJSON?.message || xhr.responseText || "Error en la petición";
+            Swal.fire("Error", msg, "error");
+        });
+    });
+}
+</script>

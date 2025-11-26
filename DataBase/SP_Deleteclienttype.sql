@@ -1,8 +1,8 @@
 DELIMITER //
 CREATE PROCEDURE SP_Deleteclienttype (
-	IN _Id INTEGER
+	IN _id INTEGER
 ) 
 BEGIN
 
-	DELETE FROM ClientTypes WHERE Id=_Id;
+	DELETE FROM ClientTypes WHERE id= _id;
 END //

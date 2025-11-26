@@ -1,4 +1,4 @@
-        </div>
+</div>
         
         <!-- Footer -->
         <footer class="footer bg-dark text-light mt-auto py-4">
@@ -64,5 +64,33 @@
     
     <!-- Custom JS para sidebar -->
     <script src="/Content/dist/js/sidebar.js"></script>
+
+    <!-- jQuery (si lo usas) -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        <?php
+        if (isset($_SESSION['alert'])) {
+            $alert = $_SESSION['alert'];
+            $icon = htmlspecialchars($alert['icon'] ?? 'info', ENT_QUOTES, 'UTF-8');
+            $title = htmlspecialchars($alert['title'] ?? 'Aviso', ENT_QUOTES, 'UTF-8');
+            $text = htmlspecialchars($alert['text'] ?? 'Operación completada.', ENT_QUOTES, 'UTF-8');
+            
+            echo "Swal.fire({
+                icon: '{$icon}',
+                title: '{$title}',
+                text: '{$text}',
+                showConfirmButton: true
+            });";
+
+            // Eliminar la sesión después de mostrar
+            unset($_SESSION['alert']); 
+        }
+        ?>
+    </script>
+
 </body>
 </html>

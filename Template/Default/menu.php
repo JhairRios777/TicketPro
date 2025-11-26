@@ -1,8 +1,8 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <a class="sidebar-brand d-flex align-items-center" href="#">
-            <i class="fas fa-cube"></i>
-            <span class="fw-bold ms-2">Sistema Web</span>
+            <img class="img-logo-selection" width="40" height="40" src="..\\Content\\Demo\\img\\LOGO_TP_BLANCO_bg.png" alt="">
+            <span class="ms-2"><h4>  TicketPro</h4></span>
         </a>
         <button class="btn-close-sidebar d-lg-none" id="closeSidebar">
             <i class="fas fa-times"></i>

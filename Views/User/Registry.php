@@ -18,7 +18,7 @@
             </div>
 
             <div class="card-body collapse show">
-                <form action="" method="POST">
+                <form id="userForm" action="" method="POST">
 
                     <input type="hidden" name="Registrar" id="Registrar" value="1">
 
@@ -44,9 +44,10 @@
                     <div class="form-group">
                         <label for="service_id" class="form-label">Servicio</label>
                         <select name="service_id" id="service_id"  class="form-select">
+                            <option value="" default="selected">-- SELECCIONE UNA OPCIÓN --</option>
                             <?php
                                 foreach($services as $key => $value) {
-                                    $selected = ($JData->service_id == $service->id) ? 'selected' : '';
+                                    $selected = ($JData->service_id == $value->id) ? 'selected' : '';
                                     echo "<option value='".$value->id."' $selected>".$value->name."</option>";
                                 }
                             ?>
@@ -56,9 +57,10 @@
                     <div class="form-group">
                         <label for="role_id" class="form-label">Rol</label>
                         <select name="role_id" id="role_id" class="form-select">
+                            <option value="" default="selected">-- SELECCIONE UNA OPCIÓN --</option>
                             <?php
                                 foreach($roles as $key => $value) {
-                                    $selected = ($JData->role_id == $role->id) ? 'selected' : '';
+                                    $selected = ($JData->role_id == $value->id) ? 'selected' : '';
                                     echo "<option value='".$value->id."' $selected>".$value->name."</option>";
                                 }
                             ?>
@@ -85,13 +87,106 @@
 
                     <div class="form-group">
                         <a href="/User" class="btn btn-secondary">Regresar</a>
-                        <button type="submit" class="btn btn-primary">Aceptar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
-
-                    
 
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+(function(){
+    const form = document.getElementById('userForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e){
+        e.preventDefault();
+
+        // VALIDACIÓN CLIENTE: campos obligatorios
+        const name = document.getElementById('name')?.value?.trim() || '';
+        const username = document.getElementById('username')?.value?.trim() || '';
+        const password = document.getElementById('password')?.value?.trim() || '';
+        const service_id = document.getElementById('service_id')?.value?.trim() || '';
+        const role_id = document.getElementById('role_id')?.value?.trim() || '';
+        const email = document.getElementById('email')?.value?.trim() || '';
+        const phone = document.getElementById('phone')?.value?.trim() || '';
+
+        if (!name) {
+            await Swal.fire('Error', 'El campo Nombre Completo es obligatorio.', 'error');
+            document.getElementById('name')?.focus();
+            return;
+        }
+        if (!username) {
+            await Swal.fire('Error', 'El campo Usuario es obligatorio.', 'error');
+            document.getElementById('username')?.focus();
+            return;
+        }
+        if (!password) {
+            await Swal.fire('Error', 'El campo Contraseña es obligatorio.', 'error');
+            document.getElementById('password')?.focus();
+            return;
+        }
+        if (!service_id) {
+            await Swal.fire('Error', 'El campo Servicio es obligatorio.', 'error');
+            document.getElementById('service_id')?.focus();
+            return;
+        }
+        if (!role_id) {
+            await Swal.fire('Error', 'El campo Rol es obligatorio.', 'error');
+            document.getElementById('role_id')?.focus();
+            return;
+        }
+        if (!email) {
+            await Swal.fire('Error', 'El campo Correo es obligatorio.', 'error');
+            document.getElementById('email')?.focus();
+            return;
+        }
+        if (!phone) {
+            await Swal.fire('Error', 'El campo Teléfono es obligatorio.', 'error');
+            document.getElementById('phone')?.focus();
+            return;
+        }
+
+        const confirm = await Swal.fire({
+            title: '¿Guardar cambios?',
+            text: 'Se guardarán los datos del usuario.',
+            icon: 'question',
+            confirmButtonColor: "#b70124",
+            cancelButtonColor: "#5c636a",
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar'
+        });
+        if (!confirm.isConfirmed) return;
+
+        const fd = new FormData(form);
+        fd.append('ajax', '1');
+
+        try {
+            const res = await fetch(form.action || window.location.pathname, {
+                method: 'POST',
+                body: fd,
+                credentials: 'same-origin'
+            });
+
+            const text = await res.text();
+            let data = null;
+            try { data = JSON.parse(text); } catch(e){ /* no JSON */ }
+
+            if (res.ok) {
+                const msg = data && data.message ? data.message : 'Usuario guardado correctamente.';
+                await Swal.fire('Éxito', msg, 'success');
+                window.location.href = (data && data.redirect) ? data.redirect : '/User';
+            } else {
+                const errMsg = (data && data.message) ? data.message : (text || 'Error en el servidor');
+                Swal.fire('Error', errMsg, 'error');
+            }
+        } catch (err) {
+            console.error('Fetch error:', err);
+            Swal.fire('Error', 'Error en la petición. Revisa la consola.', 'error');
+        }
+    });
+})();
+</script>

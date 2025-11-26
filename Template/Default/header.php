@@ -1,5 +1,8 @@
 <?php
 include_once __DIR__ . '/../../Config/Conexion.php';
+        if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+        }
 ?>
 
 <!DOCTYPE html>
@@ -33,6 +36,11 @@ include_once __DIR__ . '/../../Config/Conexion.php';
                         /* Alternativa para elementos específicos si fuese necesario */
                         ::-webkit-scrollbar-thumb { background: transparent; }
                 </style>
+
+        <!-- SweetAlert2 CSS -->
+         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+        <script src="/Content/Jquery/jquery-3.1.1.min.js"></script>
 </head>
 <body class="theme-red">
         <!-- Sidebar lateral -->
@@ -55,7 +63,16 @@ include_once __DIR__ . '/../../Config/Conexion.php';
                                                         type="button" id="userProfileDropdown" data-bs-toggle="dropdown" 
                                                         aria-expanded="false">
                                                 <i class="fas fa-user-circle me-2 fs-5"></i>
-                                                <span class="d-none d-md-inline">Usuario</span>
+                                                <span class="d-none d-md-inline">
+                                                    <?php
+                                                    // mostrar nombre del usuario conectado (proteger con htmlspecialchars)
+                                                    echo isset($_SESSION['system']['name']) ?
+                                                        htmlspecialchars($_SESSION['system']['name'], ENT_QUOTES, 'UTF-8') :
+                                                        (isset($_SESSION['system']['NameFull']) ?
+                                                            htmlspecialchars($_SESSION['system']['NameFull'], ENT_QUOTES, 'UTF-8') :
+                                                            'Usuario');
+                                                    ?>
+                                                </span>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
                                                 <li><a class="dropdown-item" href="#">

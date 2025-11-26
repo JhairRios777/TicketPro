@@ -24,11 +24,6 @@
                     $clientType->$key = $value;
                 }
 
-                if (empty($clientType->name)) {
-                    echo '<div class="alert alert-danger" role="alert">El nombre del tipo de cliente es obligatorio</div>';
-                    $success = false;
-                }
-
                 $this->clientTypeModel->save($clientType);
                 return $clientType;
             }

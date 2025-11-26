@@ -24,11 +24,6 @@
                     $role->$key = $value;
                 }
 
-                if(empty($role->name)) {
-                    echo '<div class="alert alert-danger" role="alert">El nombre del rol es obligatorio</div>';
-                    $success = false;
-                }
-
                 $this->roleModel->save($role);
                 return $role;
             }

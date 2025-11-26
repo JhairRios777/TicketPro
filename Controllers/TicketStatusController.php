@@ -23,11 +23,6 @@
                     $ticketStatus->$key = $value;
                 }
 
-                if(empty($ticketStatus->name)) {
-                    echo '<div class="alert alert-danger" role="alert">El nombre del estado es obligatorio</div>';
-                    $success = false;
-                }
-
                 $this->ticketStatusModel->save($ticketStatus);
                 return $ticketStatus;
             }
