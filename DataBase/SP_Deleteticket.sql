@@ -1,0 +1,8 @@
+DELIMITER //
+CREATE PROCEDURE SP_Deleteticket (
+	IN _Id INTEGER
+) 
+BEGIN
+
+	DELETE FROM Tickets WHERE Id=_Id;
+END //
