@@ -25,7 +25,7 @@
 
                 foreach($_POST as $key => $value) {
                     $user->$key = $value;
-                    //echo "$key : $value <br>";
+                    //echo "$key : $value <br>".;
                 }
 
                 if(empty($user->username)) {

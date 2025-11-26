@@ -1,0 +1,8 @@
+DELIMITER //
+CREATE PROCEDURE SP_Deleteservice (
+	IN _Id INTEGER
+) 
+BEGIN
+
+	DELETE FROM Services WHERE Id=_Id;
+END //

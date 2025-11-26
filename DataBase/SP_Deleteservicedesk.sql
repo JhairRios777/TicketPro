@@ -1,0 +1,8 @@
+DELIMITER //
+CREATE PROCEDURE SP_Deleteservicedesk (
+	IN _Id INTEGER
+) 
+BEGIN
+
+	DELETE FROM ServiceDesks WHERE Id=_Id;
+END //
