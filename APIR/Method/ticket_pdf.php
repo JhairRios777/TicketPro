@@ -11,7 +11,7 @@ if (!class_exists('\\Config\\AutoLoad')) {
     \Config\AutoLoad::run();
 }
 
-require_once __DIR__ . '/../../lib/fpdf.php';
+require_once __DIR__ . '/../../Vendor/fpdf/fpdf.php';
 
 $Conexion = new Conexion();
 $Conexion = $Conexion->getConexion();
