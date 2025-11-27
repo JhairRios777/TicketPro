@@ -100,6 +100,7 @@
                                                     <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
                                                     <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cerrar</button>
                                                     <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cambiar Servicio</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary repetir-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" disabled>Repetir</button>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -138,6 +139,7 @@
                                                     <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
                                                     <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cerrar</button>
                                                     <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cambiar Servicio</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary repetir-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" disabled>Repetir</button>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -176,6 +178,7 @@
                                                     <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
                                                     <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cerrar</button>
                                                     <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cambiar Servicio</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary repetir-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" disabled>Repetir</button>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -247,21 +250,24 @@
     <?php
         // try to resolve the ServiceDesks.id for the current user so frontends can emit desk id instead of user id
         $CURRENT_DESK_ID = null;
+        $CURRENT_DESK_NAME = null;
         if (isset($_SESSION['system']['user_id'])) {
             try {
                 $__pdo = new \Config\Conexion();
                 $__conn = $__pdo->getConexion();
-                $__stmt = $__conn->prepare("SELECT id FROM ServiceDesks WHERE user_id = :uid LIMIT 1");
+                $__stmt = $__conn->prepare("SELECT id, desk_name FROM ServiceDesks WHERE user_id = :uid LIMIT 1");
                 $__stmt->bindValue(':uid', $_SESSION['system']['user_id']);
                 $__stmt->execute();
                 $__row = $__stmt->fetch(PDO::FETCH_ASSOC);
                 if ($__row && isset($__row['id'])) $CURRENT_DESK_ID = $__row['id'];
+                if ($__row && isset($__row['desk_name'])) $CURRENT_DESK_NAME = $__row['desk_name'];
             } catch (Exception $e) {
                 $CURRENT_DESK_ID = null;
             }
         }
     ?>
     window.CURRENT_DESK_ID = <?php echo json_encode($CURRENT_DESK_ID); ?>;
+    window.CURRENT_DESK_NAME = <?php echo json_encode($CURRENT_DESK_NAME); ?>;
 
     (function(){
         function apiUpdate(data){
@@ -293,7 +299,7 @@
                 apiUpdate({ id: id, action: 'take' })
                 .done(function(res){
                     if(res && res.success){
-                        var payload = { event: 'ticket_changed', action: 'take', id: id, code: code || res.code || '', serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_USER_NAME, ts: Date.now() };
+                        var payload = { event: 'ticket_changed', action: 'take', id: id, code: code || res.code || '', serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_DESK_NAME || null, ts: Date.now() };
                         try{ localStorage.setItem('ticket_event', JSON.stringify(payload)); }catch(e){}
                         try{ if('BroadcastChannel' in window){ (new BroadcastChannel('ticket_events')).postMessage(payload); } }catch(e){}
 
@@ -302,6 +308,7 @@
                         $btn.prop('disabled', true).removeClass('btn-success').addClass('btn-secondary');
                         $row.find('.cerrar-btn').prop('disabled', false).removeClass('disabled');
                         $row.find('.cambiar-btn').prop('disabled', false).removeClass('disabled');
+                            $row.find('.repetir-btn').prop('disabled', false).removeClass('disabled');
                         $row.attr('data-taken-by', window.CURRENT_USER_ID);
                         if($row.find('.badge-attention').length === 0){
                             $row.find('td:first-child').append(' <span class="badge bg-info ms-2 badge-attention">En atención</span>');
@@ -333,7 +340,7 @@
                 apiUpdate({ id: id, action: 'close' })
                 .done(function(res){
                     if(res && res.success){
-                        var payload = { event: 'ticket_changed', action: 'close', id: id, code: code || res.code || '', serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_USER_NAME, ts: Date.now() };
+                        var payload = { event: 'ticket_changed', action: 'close', id: id, code: code || res.code || '', serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_DESK_NAME || null, ts: Date.now() };
                         try{ localStorage.setItem('ticket_event', JSON.stringify(payload)); }catch(e){}
                         try{ if('BroadcastChannel' in window){ (new BroadcastChannel('ticket_events')).postMessage(payload); } }catch(e){}
                         $btn.closest('tr').remove();
@@ -369,7 +376,7 @@
                     apiUpdate({ id: id, action: 'change_service', service_id: newService })
                     .done(function(res){
                         if(res && res.success){
-                            var payload = { event: 'ticket_changed', action: 'change_service', id: id, newService: newService, code: code || res.code || '', ts: Date.now(), serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_USER_NAME };
+                            var payload = { event: 'ticket_changed', action: 'change_service', id: id, newService: newService, code: code || res.code || '', ts: Date.now(), serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_DESK_NAME || null };
                             try{ localStorage.setItem('ticket_event', JSON.stringify(payload)); }catch(e){}
                             try{ if('BroadcastChannel' in window){ (new BroadcastChannel('ticket_events')).postMessage(payload); } }catch(e){}
                             var $row = $btn.closest('tr');
@@ -442,6 +449,18 @@
                 }
             }catch(e){ console.warn('handleExternalEvent error', e); }
         }
+
+        // Repetir llamado: cuando el empleado pide repetir el anuncio para un ticket
+        $(document).on('click', '.repetir-btn', function(){
+            var $btn = $(this);
+            if($btn.prop('disabled')) return;
+            var id = $btn.data('id');
+            var code = $btn.data('code') || '';
+            var payload = { event: 'ticket_changed', action: 'repeat', id: id, code: code, serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_DESK_NAME || null, ts: Date.now() };
+            try{ localStorage.setItem('ticket_event', JSON.stringify(payload)); }catch(e){}
+            try{ if('BroadcastChannel' in window){ (new BroadcastChannel('ticket_events')).postMessage(payload); } }catch(e){}
+            Swal.fire({ icon: 'info', title: 'Repetición solicitada', toast:true, position:'top-end', timer:1200, showConfirmButton:false });
+        });
 
         // storage listener (other tabs)
         window.addEventListener('storage', function(e){

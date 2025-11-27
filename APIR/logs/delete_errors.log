@@ -130,3 +130,6 @@ Trace:#0 C:\xamppWEB\htdocs\TicketPro\APIR\Method\Delete.php(83): PDOStatement->
 #2 {main}
 [2025-11-27 18:06:26] deleted ticket id=1 audits_deleted=6 tickets_deleted=1
 [2025-11-27 18:06:30] deleted ticket id=2 audits_deleted=4 tickets_deleted=1
+[2025-11-27 19:11:15] deleted ticket id=1 audits_deleted=29 tickets_deleted=1
+[2025-11-27 19:11:19] deleted ticket id=2 audits_deleted=12 tickets_deleted=1
+[2025-11-27 19:11:22] deleted ticket id=3 audits_deleted=6 tickets_deleted=1

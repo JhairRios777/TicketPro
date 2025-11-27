@@ -97,7 +97,10 @@
 <body class="theme-red">
     <header class="topbar" style="height:70px;background:var(--theme-red-primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;">
         <div class="brand"><img src="../../Content/Demo/img/LOGO_BAC.png" alt="Logo BAC" class="img-logo-selection"></div>
-        <div id="clock" style="font-weight:700;font-size:2.5rem">--:--</div>
+        <div style="display:flex;align-items:center;gap:12px">
+            <div id="clock" style="font-weight:700;font-size:2.5rem">--:--</div>
+            <button id="ttsToggle" class="btn btn-outline-light btn-sm" style="font-weight:700">Audio: On</button>
+        </div>
     </header>
 
     <div class="content-container" style="display:flex;align-items:stretch;padding:1rem;margin-top:60px">
@@ -146,6 +149,172 @@
     updateClock(); setInterval(updateClock,60000);
     // local map of taken tickets (id -> { id, code, serviceDeskId, ts })
     const takenMap = {};
+    // TTS: announced timestamps to avoid repeat announcements
+    const announcedMap = {};
+
+    // Admin detection: only show the audio control when URL contains ?admin=1
+    const isAdmin = new URLSearchParams(location.search).get('admin') === '1';
+
+    // TTS control stored in localStorage so admin preference persists
+    let ttsEnabled = localStorage.getItem('ticket_display_tts') === '1';
+    let selectedVoice = null;
+
+    // Cache for serviceDesk names (id -> name)
+    const deskNameCache = {};
+
+    // Try to resolve a desk name by querying the display API; returns null if not found
+    async function resolveDeskName(sdId){
+        if(!sdId) return null;
+        if(deskNameCache[sdId]) return deskNameCache[sdId];
+        try{
+            const body = new URLSearchParams();
+            body.append('uid','consultasAPI');
+            body.append('pw','API*Data123*');
+            const controller = new AbortController();
+            const timeout = setTimeout(()=> controller.abort(), 700); // 700ms timeout
+            const res = await fetch('/APIR/index.php?method=list_display_tickets', { method: 'POST', body, signal: controller.signal });
+            clearTimeout(timeout);
+            if(!res.ok) return null;
+            const json = await res.json();
+            const taken = Array.isArray(json.taken) ? json.taken : (json.current ? (Array.isArray(json.current)?json.current:[json.current]) : []);
+            for(const it of taken){
+                const id = it.serviceDeskId || it.service_desk_id || it.served_by || it.user_id || null;
+                if(id && String(id) === String(sdId)){
+                    const name = it.serviceDeskName || it.desk_name || null;
+                    if(name){ deskNameCache[sdId] = name; return name; }
+                }
+            }
+        }catch(e){ /* ignore fetch errors or abort */ }
+        return null;
+    }
+
+    // AudioContext will only be created on user gesture (admin click)
+    let audioCtx = null;
+    let audioInited = false;
+
+    function initAudioContext(){
+        if(audioInited) return;
+        try{
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioInited = true;
+            // resume in case it is suspended (required on some browsers)
+            if(audioCtx.state === 'suspended' && typeof audioCtx.resume === 'function') audioCtx.resume().catch(()=>{});
+        }catch(e){
+            console.warn('Could not create AudioContext', e);
+            audioInited = false;
+        }
+    }
+
+    function beep(duration = 150, freq = 1000){
+        if(!audioInited || !audioCtx) return Promise.resolve();
+        return new Promise(resolve=>{
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'sine';
+            o.frequency.value = freq;
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            const start = audioCtx.currentTime;
+            g.gain.setValueAtTime(0.0001, start);
+            g.gain.exponentialRampToValueAtTime(0.5, start + 0.01);
+            o.start(start);
+            const stopAt = start + duration/1000;
+            g.gain.exponentialRampToValueAtTime(0.0001, stopAt + 0.02);
+            setTimeout(()=>{ try{ o.stop(); }catch(e){}; resolve(); }, duration + 40);
+        });
+    }
+
+    function selectSpanishVoice(){
+        if(!('speechSynthesis' in window)) return null;
+        const voices = window.speechSynthesis.getVoices();
+        let v = voices.find(x=> x.lang && x.lang.toLowerCase().startsWith('es')) || voices.find(x=> /spanish/i.test(x.name));
+        if(!v) v = voices[0] || null;
+        selectedVoice = v;
+        return v;
+    }
+
+    if('speechSynthesis' in window){
+        window.speechSynthesis.onvoiceschanged = function(){ selectSpanishVoice(); };
+        selectSpanishVoice();
+    }
+
+    function speakText(text){
+        if(!ttsEnabled) return;
+        if(!('speechSynthesis' in window)) return console.warn('TTS not supported');
+        try{
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'es-ES';
+            if(selectedVoice) utter.voice = selectedVoice;
+            utter.rate = 0.85;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utter);
+        }catch(e){ console.warn('TTS error', e); }
+    }
+
+    // small number->Spanish words (supports 0-99 reasonably)
+    // helper to extract caja/serviceDesk id from different API shapes (top-level for announceTicket)
+    function extractServiceDeskId(item){
+        if(!item) return '';
+        return item.serviceDeskId || item.service_desk_id || item.servicedesk_id || item.served_by || item.user_id || (item.servicedesk && (item.servicedesk.id || item.servicedesk.user_id)) || item.caja || item.box || '';
+    }
+
+    // helper to extract desk name if provided by API (top-level for announceTicket)
+    function extractServiceDeskName(item){
+        if(!item) return '';
+        return item.serviceDeskName || item.desk_name || item.service_desk_name || (item.servicedesk && (item.servicedesk.name || item.servicedesk.desk_name)) || '';
+    }
+
+    function numberToSpanish(n){
+        n = Number(n) || 0;
+        const unidades = ['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciseis','diecisiete','dieciocho','diecinueve'];
+        const decenas = ['','','veinte','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
+        if(n < 20) return unidades[n];
+        if(n < 30){
+            if(n === 20) return 'veinte';
+            return 'veinti' + unidades[n-20];
+        }
+        const d = Math.floor(n/10);
+        const u = n % 10;
+        return decenas[d] + (u ? ' y ' + unidades[u] : '');
+    }
+
+    async function announceTicket(item, force){
+        try{
+            const id = item.id || item.code || item.ticket_code || '';
+            const now = Date.now();
+            force = !!force;
+            if(!force && announcedMap[id] && (now - announcedMap[id] < 20000)) return; // 20s debounce
+            const code = item.code || item.ticket_code || item.id || '';
+            const sdId = extractServiceDeskId(item) || '';
+            let sdName = extractServiceDeskName(item) || '';
+            // if no name provided, try to resolve quickly from server (cache) before speaking
+            if(!sdName && sdId){
+                try{
+                    const resolved = await resolveDeskName(sdId);
+                    if(resolved) sdName = resolved;
+                }catch(e){ /* continue with id fallback */ }
+            }
+            let phrase = '';
+            if(sdName){
+                phrase = `Ticket ${code} en caja ${sdName}`;
+            } else if(sdId && !isNaN(Number(sdId))){
+                const words = numberToSpanish(Number(sdId));
+                phrase = `Ticket ${code} en caja número ${words}`;
+            } else {
+                phrase = `Ticket ${code} en la caja`;
+            }
+            // play a short ding if audio initialized, then speak
+            if(ttsEnabled){
+                try{
+                    if(audioInited){
+                        await beep(150, 1000);
+                    }
+                }catch(e){ console.warn('beep failed', e); }
+                speakText(phrase);
+            }
+            announcedMap[id] = now;
+        }catch(e){ console.warn('announceTicket error', e); }
+    }
     
     // Fetch tickets (abierto + espera) and update display every 5 seconds
     async function refreshTickets(){
@@ -211,17 +380,7 @@
             const tbody = document.querySelector('.table-tickets tbody');
             tbody.innerHTML = '';
 
-            // helper to extract caja/serviceDesk id from different API shapes
-            function extractServiceDeskId(item){
-                if(!item) return '';
-                return item.serviceDeskId || item.service_desk_id || item.servicedesk_id || item.served_by || item.user_id || (item.servicedesk && (item.servicedesk.id || item.servicedesk.user_id)) || item.caja || item.box || '';
-            }
-
-            // helper to extract desk name if provided by API
-            function extractServiceDeskName(item){
-                if(!item) return '';
-                return item.serviceDeskName || item.desk_name || item.service_desk_name || (item.servicedesk && (item.servicedesk.name || item.servicedesk.desk_name)) || '';
-            }
+            
 
             const toShow = finalList; // show one ticket per serviceDesk (most recent)
             for (let i=0;i<toShow.length;i++){
@@ -236,6 +395,8 @@
                 td2.textContent = cajaDisplay;
                 tr.appendChild(td1); tr.appendChild(td2); tbody.appendChild(tr);
             }
+
+            // No automatic announcements here: only 'repeat' triggers audio (admin controls)
 
             console.log('refreshTickets: rendered', toShow.length, 'rows');
 
@@ -252,22 +413,26 @@
                 var payload = JSON.parse(e.newValue || '{}');
                 if(payload && payload.event === 'ticket_changed'){
                     // update local takenMap according to action
-                    try{
-                        var act = payload.action;
-                        var tid = payload.id;
-                        if(act === 'take'){
-                            takenMap[tid] = { id: tid, code: payload.code || payload.ticket_code || '', serviceDeskId: payload.serviceDeskId || payload.service_desk_id || payload.served_by || null, ts: payload.ts || Date.now() };
-                        } else if(act === 'close'){
-                            delete takenMap[tid];
-                        } else if(act === 'change_service'){
-                            // If payload contains serviceDeskId (meaning someone is attending it), set/update takenMap
-                            if(payload.serviceDeskId){
-                                takenMap[tid] = Object.assign({}, takenMap[tid] || {}, { id: tid, code: payload.code || payload.ticket_code || '', serviceDeskId: payload.serviceDeskId, ts: payload.ts || Date.now() });
-                            } else if(takenMap[tid]){
-                                // otherwise, update existing entry's serviceDeskId to newService if provided
-                                takenMap[tid].serviceDeskId = payload.newService || payload.service_id || takenMap[tid].serviceDeskId;
-                            }
-                        }
+                            try{
+                                var act = payload.action;
+                                var tid = payload.id;
+                                if(act === 'take'){
+                                    takenMap[tid] = { id: tid, code: payload.code || payload.ticket_code || '', serviceDeskId: payload.serviceDeskId || payload.service_desk_id || payload.served_by || null, ts: payload.ts || Date.now() };
+                                } else if(act === 'close'){
+                                    delete takenMap[tid];
+                                } else if(act === 'change_service'){
+                                    // If payload contains serviceDeskId (meaning someone is attending it), set/update takenMap
+                                    if(payload.serviceDeskId){
+                                        takenMap[tid] = Object.assign({}, takenMap[tid] || {}, { id: tid, code: payload.code || payload.ticket_code || '', serviceDeskId: payload.serviceDeskId, ts: payload.ts || Date.now() });
+                                    } else if(takenMap[tid]){
+                                        // otherwise, update existing entry's serviceDeskId to newService if provided
+                                        takenMap[tid].serviceDeskId = payload.newService || payload.service_id || takenMap[tid].serviceDeskId;
+                                    }
+                                } else if(act === 'repeat'){
+                                    // force repeat announcement requested by an employee
+                                    var tmp = takenMap[tid] || { id: tid, code: payload.code || payload.ticket_code || '' , serviceDeskId: payload.serviceDeskId || null };
+                                    try{ announceTicket(tmp, true); }catch(e){}
+                                }
                     }catch(e){ console.warn('storage payload handling error', e); }
                     // immediate refresh to reflect change
                     refreshTickets();
@@ -299,6 +464,9 @@
                                     } else if(takenMap[tid]){
                                         takenMap[tid].serviceDeskId = payload.newService || payload.service_id || takenMap[tid].serviceDeskId;
                                     }
+                                } else if(act === 'repeat'){
+                                    var tmp = takenMap[tid] || { id: tid, code: payload.code || payload.ticket_code || '' , serviceDeskId: payload.serviceDeskId || null };
+                                    try{ announceTicket(tmp, true); }catch(e){}
                                 }
                             }catch(e){ console.warn('bc payload handling error', e); }
                             refreshTickets();
@@ -307,6 +475,27 @@
             });
         }
     }catch(e){ console.warn('BroadcastChannel not available', e); }
+    </script>
+    <script>
+    // audio/admin UI: hide toggle for public view, enable init on admin gesture
+    document.addEventListener('DOMContentLoaded', function(){
+        const tbtn = document.getElementById('ttsToggle');
+        if(!tbtn) return;
+        if(!isAdmin){
+            tbtn.style.display = 'none';
+            return;
+        }
+        // admin visible: reflect saved state
+        tbtn.textContent = 'Audio: ' + (ttsEnabled ? 'On' : 'Off');
+        tbtn.addEventListener('click', async function(){
+            // initialize audio on first gesture
+            if(!audioInited){ initAudioContext(); try{ await beep(80, 1200); }catch(e){} }
+            // toggle
+            ttsEnabled = !ttsEnabled;
+            localStorage.setItem('ticket_display_tts', ttsEnabled ? '1' : '0');
+            tbtn.textContent = 'Audio: ' + (ttsEnabled ? 'On' : 'Off');
+        });
+    });
     </script>
     <script>
     // Simple carousel: alterna imágenes dentro de #adCarousel cada 5 segundos
