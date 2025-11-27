@@ -40,9 +40,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="card-header-title">Lista de Auditorias</div>
 
-        <div class="pulleft">
-            <a href='/Audit/Registry/' type="button" class="btn btn-sm btn-primary">Nueva Auditoría</a>
-        </div>
+       
 
 </div>
 

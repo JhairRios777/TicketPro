@@ -24,6 +24,17 @@
                 }
 
                 $this->ticketStatusModel->save($ticketStatus);
+                // Log audit: ticket status created/updated
+                try {
+                    $userId = isset($_SESSION["system"]["user_id"]) ? $_SESSION["system"]["user_id"] : null;
+                    $action = (isset($ticketStatus->id) && $ticketStatus->id !== '') ? 'ticket_status_update' : 'ticket_status_create';
+                    $details = 'TicketStatus ID: ' . (isset($ticketStatus->id) ? $ticketStatus->id : '');
+                    $audit = new \Models\Audit();
+                    $audit->log($userId, null, null, $action, $details);
+                } catch (\Exception $e) {
+                    // ignore audit failures
+                }
+
                 return $ticketStatus;
             }
 

@@ -5,6 +5,8 @@
     require_once "Config\Conexion.php";
     require_once 'Entity\eUser.php';
     require_once "Models\User.php";
+    // Ensure Audit model is available when logging login events
+    require_once "Models\Audit.php";
 
     use Models\User as User;
     $user = new User();
@@ -27,8 +29,17 @@
         //echo json_encode($data);
 
         if($data) {
-          $_SESSION["system"]["username"]=$data->username;
-          $_SESSION["system"]["name"]=$data->name;
+                    $_SESSION["system"]["username"]=$data->username;
+                    $_SESSION["system"]["name"]=$data->name;
+                    $_SESSION["system"]["user_id"] = isset($data->id) ? $data->id : null;
+
+                    // Log audit: user login
+                      try {
+                          $audit = new \Models\Audit();
+                          $audit->log($data->id, null, null, 'login', 'Usuario inició sesión: ' . $data->username);
+                      } catch (\Exception $e) {
+                          // ignore logging failures
+                      }
         }
 
         

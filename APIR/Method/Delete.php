@@ -1,5 +1,6 @@
 <?php
     use Config\Conexion as Conexion;
+    if (session_status() === PHP_SESSION_NONE) session_start();
     $Conexion = new Conexion();
     $Conexion = $Conexion->getConexion();
 
@@ -37,6 +38,14 @@
             'success' => true
 
         );
+        // log audit of delete
+        try {
+            $userId = isset($_SESSION["system"]["user_id"]) ? $_SESSION["system"]["user_id"] : null;
+            $audit = new \Models\Audit();
+            $audit->log($userId, null, $id, 'delete', 'Eliminado de ' . $table . ' ID='.$id);
+        } catch (\Exception $e) {
+            // ignore
+        }
 
         echo json_encode($json);
         http_response_code(200);

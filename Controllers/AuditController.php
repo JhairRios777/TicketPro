@@ -53,6 +53,14 @@
             } catch (\Exception $e) {}
 
             // build PDF
+            // Log that the audit report was downloaded
+            try {
+                $userId = isset($_SESSION["system"]["user_id"]) ? $_SESSION["system"]["user_id"] : null;
+                $this->auditModel->log($userId, $audit->desk_id, $audit->ticket_id, 'download_pdf', 'Descarga de reporte de auditoría ID '.$audit->id);
+            } catch (\Exception $e) {
+                // ignore logging failure
+            }
+
             $pdf = new \FPDF('P','mm','A4');
             $pdf->SetMargins(15, 15, 15);
             $pdf->AddPage();
