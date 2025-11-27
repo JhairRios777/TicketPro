@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="col-md-4 mb-3 mb-md-0">
                     <h5 class="mb-3">
-                        <img class="img-logo-selection" width="40" height="40" src="../Content/Demo/img/LOGO_TP_BLANCO_bg.png" alt=""></i>TicketPro
+                        <img class="img-logo-selection" width="40" height="40" src="../Content/Demo/img/LOGO_TP_BLANCO_bg.png" alt=""></i>  <span style="font-weight:700;font-size:1.5rem">TicketPro</span>
                     </h5>
                     <p class="text-muted">Su solución permite mejorar la eficiencia, reducir tiempos de espera y optimizar los procesos en instituciones con alto volumen de usuarios</p>
                 </div>

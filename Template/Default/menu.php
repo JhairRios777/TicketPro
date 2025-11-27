@@ -2,7 +2,7 @@
     <div class="sidebar-header">
         <a class="sidebar-brand d-flex align-items-center" href="#">
             <img class="img-logo-selection" width="40" height="40" src="..\\Content\\Demo\\img\\LOGO_TP_BLANCO_bg.png" alt="">
-            <span class="ms-2"><h4>  TicketPro</h4></span>
+              <span style="font-weight:700;font-size:1.5rem">TicketPro</span>
         </a>
         <button class="btn-close-sidebar d-lg-none" id="closeSidebar">
             <i class="fas fa-times"></i>

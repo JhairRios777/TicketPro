@@ -29,11 +29,11 @@ class CustomPDF extends FPDF {
         // 2. LOGO IZQUIERDO (Coordenadas: X, Y, Ancho)
         // Ruta absoluta: C:\xamppWEB\htdocs\TicketPro_copia\Content\Demo\img\logo1.png
         // Asumiendo que el script se ejecuta desde la raíz o que la ruta es correcta
-        $this->Image('Content/Demo/img/logo_bac_reporte.png', 10, 8, 30); 
+        $this->Image('Content/Demo/img/logo_bac_reporte.png', 15, 14, 40); 
 
         // 3. LOGO DERECHO
         // (Ancho de la página 210mm - ancho del logo 30mm - margen derecho 10mm) = 170
-        $this->Image('Content/Demo/img/logo_tp_reporte.png', 170, 8, 30); 
+        $this->Image('Content/Demo/img/logo_tp_reporte.png', 155, 15, 40); 
 
         // 4. INFORMACIÓN CENTRAL (Celda con 100mm de ancho)
         $this->SetXY(55, 10); // Posiciona el cursor en X=55, Y=10
