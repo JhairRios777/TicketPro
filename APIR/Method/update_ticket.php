@@ -1,0 +1,127 @@
+<?php
+use Config\Conexion as Conexion;
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+// Ensure constants and autoloader
+if (!defined('ROOT')) {
+    require_once __DIR__ . '/../../Define.php';
+}
+if (!class_exists('\\Config\\AutoLoad')) {
+    require_once __DIR__ . '/../../Config/AutoLoad.php';
+    \Config\AutoLoad::run();
+}
+
+$Conexion = new Conexion();
+$Conexion = $Conexion->getConexion();
+
+// Accept POST form-data or JSON
+$input = $_POST;
+$raw = @file_get_contents('php://input');
+if ($raw && empty($input)) {
+    $json = json_decode($raw, true);
+    if (is_array($json)) $input = $json;
+}
+
+$id = isset($input['id']) ? $input['id'] : null;
+$action = isset($input['action']) ? strtolower($input['action']) : null;
+$service_id = isset($input['service_id']) ? $input['service_id'] : null;
+
+if (empty($id) || empty($action)) {
+    echo json_encode(['success'=>false,'message'=>'id y action son requeridos']);
+    http_response_code(400);
+    exit;
+}
+
+// helper: find status id by name patterns
+function findStatusId($pdo, $patterns) {
+    foreach ($patterns as $p) {
+        $stmt = $pdo->prepare("SELECT id FROM TicketStatuses WHERE LOWER(name) LIKE :pattern LIMIT 1");
+        $pat = '%' . strtolower($p) . '%';
+        $stmt->bindParam(':pattern', $pat);
+        $stmt->execute();
+        $r = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($r && isset($r['id'])) return (int)$r['id'];
+    }
+    return null;
+}
+
+try {
+    $ticketModel = new \Models\Ticket();
+    $t = $ticketModel->getForId($id);
+    if (!$t) {
+        echo json_encode(['success'=>false,'message'=>'Ticket no encontrado']);
+        http_response_code(404);
+        exit;
+    }
+
+    $newStatusId = null;
+    $detail = '';
+
+    if ($action === 'take') {
+        // mark as being attended -> prefer 'abierto' or 'atenc'
+        $newStatusId = findStatusId($Conexion, ['abierto','atenc','atención','en atención']);
+        $detail = 'Ticket tomado para atención';
+    } elseif ($action === 'close' || $action === 'cerrar') {
+        $newStatusId = findStatusId($Conexion, ['cerrado','cerrar']);
+        $detail = 'Ticket cerrado';
+    } elseif ($action === 'change_service' || $action === 'cambiar' || $action === 'cambiar_servicio') {
+        // change service and set to 'En espera'
+        if (empty($service_id)) {
+            echo json_encode(['success'=>false,'message'=>'service_id requerido para cambiar servicio']);
+            http_response_code(400);
+            exit;
+        }
+        $newStatusId = findStatusId($Conexion, ['espera','en espera']);
+        $detail = 'Servicio cambiado a id ' . $service_id;
+    } else {
+        echo json_encode(['success'=>false,'message'=>'acción no soportada']);
+        http_response_code(400);
+        exit;
+    }
+
+    // if we couldn't find a status by name, fallback to existing or 1
+    if (empty($newStatusId)) {
+        $newStatusId = isset($t->status_id) ? $t->status_id : 1;
+    }
+
+    // perform update
+    $sql = "UPDATE Tickets SET status_id = :status_id";
+    $params = [':status_id' => $newStatusId, ':id' => $id];
+    if ($action === 'change_service' || strpos($action, 'cambiar') !== false) {
+        $sql .= ", service_id = :service_id";
+        $params[':service_id'] = $service_id;
+    }
+    // Optionally set the user taking the ticket to current session user
+    $currentUserId = isset($_SESSION['system']['user_id']) ? $_SESSION['system']['user_id'] : null;
+    if ($action === 'take' && $currentUserId) {
+        $sql .= ", user_id = :user_id";
+        $params[':user_id'] = $currentUserId;
+    }
+    $sql .= " WHERE id = :id";
+
+    $stmt = $Conexion->prepare($sql);
+    foreach ($params as $k => $v) {
+        $stmt->bindValue($k, $v);
+    }
+    $stmt->execute();
+
+    // audit log
+    try {
+        $audit = new \Models\Audit();
+        $auditUser = $currentUserId ?: (isset($_SESSION['system']['user_id'])?$_SESSION['system']['user_id']:null);
+        $audit->log($auditUser, null, $id, strtoupper($action), $detail);
+    } catch (\Exception $e) {
+        // ignore
+    }
+
+    echo json_encode(['success'=>true,'message'=>'Ticket actualizado']);
+    http_response_code(200);
+    exit;
+
+} catch (\Exception $e) {
+    echo json_encode(['success'=>false,'message'=>'Error: '.$e->getMessage()]);
+    http_response_code(500);
+    exit;
+}
+
+?>

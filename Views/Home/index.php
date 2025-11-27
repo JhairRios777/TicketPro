@@ -53,7 +53,8 @@
                         $ctLower = strtolower($clientTypeName);
                         $sLower = strtolower($serviceName);
 
-                        $item = ['id' => $ticket_code, 'caja' => $serviceName];
+                        // keep numeric id and show ticket_code separately
+                        $item = ['id' => $id, 'code' => $ticket_code, 'caja' => $serviceName];
 
                         if (strpos($ctLower, 'prefer') !== false || strpos($ctLower, 'preferencial') !== false) {
                             $premiumTickets[] = $item;
@@ -93,11 +94,11 @@
                                     <tbody>
                                         <?php foreach($normalTickets as $tk){ ?>
                                             <tr>
-                                                <td><strong>#<?php echo $tk['id']; ?></strong></td>
+                                                <td><strong>#<?php echo $tk['code']; ?></strong></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
-                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>">Cerrar</button>
-                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>">Cambiar Servicio</button>
+                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
+                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cerrar</button>
+                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cambiar Servicio</button>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -131,11 +132,11 @@
                                     <tbody>
                                         <?php foreach($customerTickets as $tk){ ?>
                                             <tr>
-                                                <td><strong>#<?php echo $tk['id']; ?></strong></td>
+                                                <td><strong>#<?php echo $tk['code']; ?></strong></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
-                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>">Cerrar</button>
-                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>">Cambiar Servicio</button>
+                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
+                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cerrar</button>
+                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cambiar Servicio</button>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -169,11 +170,11 @@
                                     <tbody>
                                         <?php foreach($premiumTickets as $tk){ ?>
                                             <tr>
-                                                <td><strong>#<?php echo $tk['id']; ?></strong></td>
+                                                <td><strong>#<?php echo $tk['code']; ?></strong></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
-                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>">Cerrar</button>
-                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>">Cambiar Servicio</button>
+                                                    <button type="button" class="btn btn-sm btn-success tomar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>" data-caja="<?php echo $tk['caja']; ?>">Tomar</button>
+                                                    <button type="button" class="btn btn-sm btn-danger cerrar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cerrar</button>
+                                                    <button type="button" class="btn btn-sm btn-warning cambiar-btn" data-id="<?php echo $tk['id']; ?>" data-code="<?php echo $tk['code']; ?>">Cambiar Servicio</button>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -234,3 +235,68 @@
 .card-stat .table-sm tbody tr td:last-child { color:var(--secondary-color,#6c757d); }
 
 </style>
+
+<script>
+    (function(){
+        function apiUpdate(data){
+            // include API credentials if needed when not logged in
+            var payload = Object.assign({}, data);
+            // If session does not exist for kiosk, you can pass uid/pw here. Otherwise omitted.
+            return $.ajax({
+                url: '/APIR/index.php?method=update_ticket',
+                method: 'POST',
+                data: payload,
+                dataType: 'json'
+            });
+        }
+
+        $(document).on('click', '.tomar-btn', function(){
+            var id = $(this).data('id');
+            if (!confirm('¿Tomar ticket '+id+' para atención?')) return;
+            apiUpdate({ id: id, action: 'take' })
+                .done(function(res){
+                    if(res && res.success){
+                        location.reload();
+                    } else {
+                        alert(res.message || 'Error actualizando ticket');
+                    }
+                }).fail(function(xhr){
+                    alert('Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText));
+                });
+        });
+
+        $(document).on('click', '.cerrar-btn', function(){
+            var id = $(this).data('id');
+            if (!confirm('¿Cerrar ticket '+id+'?')) return;
+            apiUpdate({ id: id, action: 'close' })
+                .done(function(res){
+                    if(res && res.success){
+                        location.reload();
+                    } else {
+                        alert(res.message || 'Error cerrando ticket');
+                    }
+                }).fail(function(xhr){
+                    alert('Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText));
+                });
+        });
+
+        $(document).on('click', '.cambiar-btn', function(){
+            var id = $(this).data('id');
+            var newService = prompt('Ingrese el ID del servicio destino (ej. 1 para Caja, 2 para Atención):');
+            if (newService === null) return; // cancel
+            newService = newService.trim();
+            if (newService === '' || isNaN(newService)) { alert('ID de servicio inválido'); return; }
+            if (!confirm('Cambiar servicio del ticket '+id+' al servicio id '+newService+'?')) return;
+            apiUpdate({ id: id, action: 'change_service', service_id: newService })
+                .done(function(res){
+                    if(res && res.success){
+                        location.reload();
+                    } else {
+                        alert(res.message || 'Error cambiando servicio');
+                    }
+                }).fail(function(xhr){
+                    alert('Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText));
+                });
+        });
+    })();
+</script>
