@@ -83,7 +83,11 @@
                                 echo '<span class="badge bg-warning">'.htmlspecialchars($statusName).'</span>';
                             } else if($Value-> status_id == '4'){
                                 echo '<span class="badge bg-secondary">'.htmlspecialchars($statusName).'</span>';
-                            } 
+                            } else if($Value-> status_id == '5'){
+                                echo '<span class="badge bg-info text-dark">'.htmlspecialchars($statusName).'</span>';
+                            } else {
+                                echo '<span class="badge bg-light text-dark">'.htmlspecialchars($statusName).'</span>';
+                            }
                         echo "</td>";
                         echo "<td>".htmlspecialchars($userName)."</td>";
                         echo "<td>".htmlspecialchars($Value->date_time)."</td>";

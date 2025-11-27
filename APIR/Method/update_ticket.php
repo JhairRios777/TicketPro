@@ -71,8 +71,17 @@ try {
             http_response_code(400);
             exit;
         }
-        $newStatusId = findStatusId($Conexion, ['espera','en espera']);
-        $detail = 'Servicio cambiado a id ' . $service_id;
+        // If the ticket is currently taken by the same user performing the change,
+        // keep it as 'abierto' (in attention) and just change service. Otherwise
+        // move it back to 'en espera' so it returns to queue for others.
+        $currentUserId = isset($_SESSION['system']['user_id']) ? $_SESSION['system']['user_id'] : null;
+        if ($currentUserId && isset($t->user_id) && $t->user_id == $currentUserId) {
+            $newStatusId = findStatusId($Conexion, ['abierto','atenc','atención','en atención']);
+            $detail = 'Servicio cambiado (mismo operador) a id ' . $service_id;
+        } else {
+            $newStatusId = findStatusId($Conexion, ['espera','en espera']);
+            $detail = 'Servicio cambiado a id ' . $service_id;
+        }
     } else {
         echo json_encode(['success'=>false,'message'=>'acción no soportada']);
         http_response_code(400);
@@ -102,9 +111,8 @@ try {
             $params[':user_id'] = $currentUserId;
         }
     } else {
-        if ($action === 'take' && $currentUserId) {
-            $sql .= ", user_id = :user_id";
-            $params[':user_id'] = $currentUserId;
+        if ($action === 'close') {
+            $sql .= ", user_id = NULL";
         }
     }
     $sql .= " WHERE id = :id";
@@ -115,6 +123,19 @@ try {
     }
     $stmt->execute();
 
+    // If change_service and the current user is the operator for this ticket, persist user_id and update date_time
+    if (($action === 'change_service' || strpos($action, 'cambiar') !== false) && $currentUserId && isset($t->user_id) && $t->user_id == $currentUserId) {
+        try {
+            $uSql = "UPDATE Tickets SET user_id = :user_id, date_time = NOW() WHERE id = :id";
+            $ustmt = $Conexion->prepare($uSql);
+            $ustmt->bindValue(':user_id', $currentUserId);
+            $ustmt->bindValue(':id', $id);
+            $ustmt->execute();
+        } catch (\Exception $e) {
+            // ignore secondary failure
+        }
+    }
+
     // audit log
     try {
         $audit = new \Models\Audit();
@@ -124,7 +145,27 @@ try {
         // ignore
     }
 
-    echo json_encode(['success'=>true,'message'=>'Ticket actualizado']);
+    // return updated ticket info to help frontends refresh from server
+    try {
+        $updated = $ticketModel->getForId($id);
+        $updatedArr = $updated ? (array)$updated : null;
+        // resolve desk id for the ticket's user
+        if ($updatedArr && isset($updatedArr['user_id'])) {
+            try {
+                $dstmt = $Conexion->prepare("SELECT id FROM ServiceDesks WHERE user_id = :uid LIMIT 1");
+                $dstmt->bindValue(':uid', $updatedArr['user_id']);
+                $dstmt->execute();
+                $drow = $dstmt->fetch(PDO::FETCH_ASSOC);
+                $updatedArr['serviceDeskId'] = $drow && isset($drow['id']) ? $drow['id'] : $updatedArr['user_id'];
+            } catch (\Exception $e) {
+                $updatedArr['serviceDeskId'] = $updatedArr['user_id'];
+            }
+        }
+    } catch (\Exception $e) {
+        $updatedArr = null;
+    }
+
+    echo json_encode(['success'=>true,'message'=>'Ticket actualizado','ticket'=>$updatedArr]);
     http_response_code(200);
     exit;
 

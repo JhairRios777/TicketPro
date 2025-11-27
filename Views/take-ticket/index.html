@@ -6,13 +6,14 @@
     <title>Tome su ticket</title>
     <link href="/Content/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/Content/dist/css/custom-themes.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { display:flex; flex-direction:column; min-height:100vh; }
-        .topbar { height:70px; background:var(--theme-red-primary); color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 1rem; }
-        .topbar .brand { font-weight:700; font-size:2rem; }
-        .main { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; }
-        .big-arrow { font-size:8rem; color:var(--theme-red-primary); margin-top:1rem }
-        .lead-text { font-size:3rem; font-weight:700; color:var(--theme-red-primary); }
+        body{min-height:100vh;display:flex;flex-direction:column}
+        .topbar{height:70px;background:var(--theme-red-primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem}
+        .brand{font-weight:700;font-size:2rem}
+        .main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:3rem}
+        .big-btn{width:60%;padding:1.75rem;border-radius:12px;background:var(--theme-red-primary);color:#fff;font-weight:700;font-size:2.5rem;border:none;margin:1rem 0}
+        @media (max-width:768px){.big-btn{width:90%}}
     </style>
 </head>
 <body class="theme-red">
@@ -20,11 +21,9 @@
         <div class="brand"><img src="../../Content/Demo/img/LOGO_BAC.png" alt="Logo BAC" class="img-logo-selection"></div>
         <div id="clock" style="font-weight:700; font-size:1.25rem">--:--</div>
     </header>
-    <main class="main container text-center">
-        <div class="lead-text">Tome su ticket</div>
-        <div class="big-arrow">&#8595;</div>
-
-        <div id="steps" style="width:100%;max-width:640px;margin-top:2rem">
+    <main class="main">
+        <h1 style="color:var(--theme-red-primary);font-weight:800;font-size:3rem">BIENVENIDO</h1>
+        <div id="steps" style="width:100%;max-width:800px;margin-top:2rem">
             <div id="service-list" style="display:flex;flex-direction:column;align-items:center;gap:1rem">
                 <button class="big-btn" data-service="caja">Caja</button>
                 <button class="big-btn" data-service="atencion">Atención al Cliente</button>
@@ -64,7 +63,20 @@
         'atención': 2
     };
 
+    // showMessage stays for compatibility but uses SweetAlert toast
     function showMessage(text, isError) {
+        if (window.Swal) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: isError ? 'error' : 'success',
+                title: text,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            return;
+        }
         const el = document.getElementById('message');
         el.style.display = 'block';
         el.style.color = isError ? '#b02a37' : '#0b6e3a';
@@ -82,7 +94,18 @@
                 return;
             }
 
-            showMessage('Generando su ticket...');
+            // Show SweetAlert loading modal
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'Generando su ticket...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            } else {
+                showMessage('Generando su ticket...');
+            }
 
             try {
                 const form = new FormData();
@@ -95,22 +118,39 @@
                 const resp = await fetch('/APIR/index.php?method=create_ticket', { method: 'POST', body: form });
                 const data = await resp.json();
                 if (!data || !data.success) {
-                    showMessage('Error al crear ticket: ' + (data && data.message ? data.message : 'Respuesta inválida'), true);
+                    const msg = (data && data.message) ? data.message : 'Respuesta inválida';
+                    if (window.Swal) Swal.fire({icon:'error', title:'Error', text: 'Error al crear ticket: ' + msg});
+                    else showMessage('Error al crear ticket: ' + msg, true);
                     return;
                 }
 
-                showMessage('Ticket creado: ' + data.ticket_code + '. Abriendo recibo...');
-
-                // Open PDF in new tab and then return to selection
                 const pdfUrl = data.pdf_url || ('/APIR/index.php?method=ticket_pdf&id=' + encodeURIComponent(data.id));
-                window.open(pdfUrl, '_blank');
 
-                // Wait briefly then go back to selection
-                setTimeout(() => { window.location.href = '/Views/selection/index.html'; }, 1200);
+                // Close loading modal then show short success message and open pdf
+                if (window.Swal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Tome su ticket',
+                        text: 'Código: ' + (data.ticket_code || ''),
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    }).then(() => {
+                        // Open PDF and redirect back to selection
+                        window.open(pdfUrl, '_blank');
+                        setTimeout(() => { window.location.href = '/Views/selection/index.html'; }, 300);
+                    });
+                } else {
+                    showMessage('Ticket creado: ' + data.ticket_code + '. Abriendo recibo...');
+                    window.open(pdfUrl, '_blank');
+                    setTimeout(() => { window.location.href = '/Views/selection/index.html'; }, 1200);
+                }
 
             } catch (err) {
                 console.error(err);
-                showMessage('Error al crear ticket: ' + err.message, true);
+                if (window.Swal) Swal.fire({icon:'error', title:'Error', text: 'Error al crear ticket: ' + err.message});
+                else showMessage('Error al crear ticket: ' + err.message, true);
             }
         });
     });

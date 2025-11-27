@@ -64,7 +64,28 @@ try {
         $queue[] = [ 'id' => $r['id'], 'code' => $r['ticket_code'], 'service' => $r['service_name'], 'status' => $r['status_name'], 'date_time' => $r['date_time'] ];
     }
 
-    echo json_encode(['success'=>true,'current'=>$current,'queue'=>$queue]);
+    // Also return all 'taken' / 'abierto' tickets so public displays can show per-caja states
+    $taken = [];
+    try {
+        $tstmt = $Conexion->prepare("SELECT t.id, t.ticket_code, t.service_id, s.name AS service_name, t.user_id, ts.name AS status_name, t.date_time, sd.id AS desk_id, sd.desk_name AS desk_name
+                                FROM Tickets t
+                                LEFT JOIN Services s ON s.id = t.service_id
+                                LEFT JOIN TicketStatuses ts ON ts.id = t.status_id
+                    LEFT JOIN ServiceDesks sd ON sd.user_id = t.user_id
+                                WHERE LOWER(COALESCE(ts.name,'')) LIKE '%abiert%'
+                                ORDER BY t.date_time DESC");
+        $tstmt->execute();
+        $trows = $tstmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($trows as $tr) {
+            $deskId = isset($tr['desk_id']) && $tr['desk_id'] ? $tr['desk_id'] : $tr['user_id'];
+            $deskName = isset($tr['desk_name']) ? $tr['desk_name'] : null;
+            $taken[] = [ 'id' => $tr['id'], 'code' => $tr['ticket_code'], 'service' => $tr['service_name'], 'status' => $tr['status_name'], 'date_time' => $tr['date_time'], 'serviceDeskId' => $deskId, 'serviceDeskName' => $deskName ];
+        }
+    } catch (\Exception $e) {
+        // ignore, taken remains empty
+    }
+
+    echo json_encode(['success'=>true,'current'=>$current,'queue'=>$queue,'taken'=>$taken]);
     http_response_code(200);
     exit;
 

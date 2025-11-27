@@ -10,6 +10,7 @@
                 </div>
                 <div>
                     <a href="Views/selection/index.html" target="_blank" class="btn btn-primary">Panel Cliente</a>
+                    <a href=""></a>
                     <a href="Views/ticket-display/index.html" target="_blank" class="btn btn-primary">Panel General</a>
                 </div>
             </div>
@@ -236,7 +237,32 @@
 
 </style>
 
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+    // expose current user id and name to JS so we can emit which servicedesk/user took the ticket
+    window.CURRENT_USER_ID = <?php echo isset($_SESSION['system']['user_id']) ? json_encode($_SESSION['system']['user_id']) : 'null'; ?>;
+    window.CURRENT_USER_NAME = <?php echo isset($_SESSION['system']['name']) ? json_encode($_SESSION['system']['name']) : 'null'; ?>;
+    <?php
+        // try to resolve the ServiceDesks.id for the current user so frontends can emit desk id instead of user id
+        $CURRENT_DESK_ID = null;
+        if (isset($_SESSION['system']['user_id'])) {
+            try {
+                $__pdo = new \Config\Conexion();
+                $__conn = $__pdo->getConexion();
+                $__stmt = $__conn->prepare("SELECT id FROM ServiceDesks WHERE user_id = :uid LIMIT 1");
+                $__stmt->bindValue(':uid', $_SESSION['system']['user_id']);
+                $__stmt->execute();
+                $__row = $__stmt->fetch(PDO::FETCH_ASSOC);
+                if ($__row && isset($__row['id'])) $CURRENT_DESK_ID = $__row['id'];
+            } catch (Exception $e) {
+                $CURRENT_DESK_ID = null;
+            }
+        }
+    ?>
+    window.CURRENT_DESK_ID = <?php echo json_encode($CURRENT_DESK_ID); ?>;
+
     (function(){
         function apiUpdate(data){
             // include API credentials if needed when not logged in
@@ -250,53 +276,197 @@
             });
         }
 
+        // Handle 'Tomar' without reloading: mark row as in-attention so employee can Close or Change
         $(document).on('click', '.tomar-btn', function(){
-            var id = $(this).data('id');
-            if (!confirm('¿Tomar ticket '+id+' para atención?')) return;
-            apiUpdate({ id: id, action: 'take' })
+            var $btn = $(this);
+            var id = $btn.data('id');
+            var code = $btn.data('code') || '';
+            Swal.fire({
+                title: 'Confirmar',
+                text: '¿Tomar ticket ' + id + ' para atención? (Se quedará en su pantalla hasta cerrar)',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, tomar',
+                cancelButtonText: 'Cancelar'
+            }).then(function(result){
+                if(!result.isConfirmed) return;
+                apiUpdate({ id: id, action: 'take' })
                 .done(function(res){
                     if(res && res.success){
-                        location.reload();
+                        var payload = { event: 'ticket_changed', action: 'take', id: id, code: code || res.code || '', serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_USER_NAME, ts: Date.now() };
+                        try{ localStorage.setItem('ticket_event', JSON.stringify(payload)); }catch(e){}
+                        try{ if('BroadcastChannel' in window){ (new BroadcastChannel('ticket_events')).postMessage(payload); } }catch(e){}
+
+                        var $row = $btn.closest('tr');
+                        // Disable tomar visually and keep row for actions
+                        $btn.prop('disabled', true).removeClass('btn-success').addClass('btn-secondary');
+                        $row.find('.cerrar-btn').prop('disabled', false).removeClass('disabled');
+                        $row.find('.cambiar-btn').prop('disabled', false).removeClass('disabled');
+                        $row.attr('data-taken-by', window.CURRENT_USER_ID);
+                        if($row.find('.badge-attention').length === 0){
+                            $row.find('td:first-child').append(' <span class="badge bg-info ms-2 badge-attention">En atención</span>');
+                        }
+                        Swal.fire({ icon: 'success', title: 'Ticket tomado', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
                     } else {
-                        alert(res.message || 'Error actualizando ticket');
+                        Swal.fire('Error', res.message || 'Error actualizando ticket', 'error');
                     }
                 }).fail(function(xhr){
-                    alert('Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText));
+                    Swal.fire('Error', 'Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText), 'error');
                 });
+            });
         });
 
+        // Close: remove row and emit event
         $(document).on('click', '.cerrar-btn', function(){
-            var id = $(this).data('id');
-            if (!confirm('¿Cerrar ticket '+id+'?')) return;
-            apiUpdate({ id: id, action: 'close' })
+            var $btn = $(this);
+            var id = $btn.data('id');
+            var code = $btn.data('code') || '';
+            Swal.fire({
+                title: 'Confirmar cierre',
+                text: '¿Cerrar ticket ' + id + '? Esta acción finalizará la gestión.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cerrar',
+                cancelButtonText: 'Cancelar'
+            }).then(function(result){
+                if(!result.isConfirmed) return;
+                apiUpdate({ id: id, action: 'close' })
                 .done(function(res){
                     if(res && res.success){
-                        location.reload();
+                        var payload = { event: 'ticket_changed', action: 'close', id: id, code: code || res.code || '', serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_USER_NAME, ts: Date.now() };
+                        try{ localStorage.setItem('ticket_event', JSON.stringify(payload)); }catch(e){}
+                        try{ if('BroadcastChannel' in window){ (new BroadcastChannel('ticket_events')).postMessage(payload); } }catch(e){}
+                        $btn.closest('tr').remove();
+                        Swal.fire({ icon: 'success', title: 'Ticket cerrado', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false });
                     } else {
-                        alert(res.message || 'Error cerrando ticket');
+                        Swal.fire('Error', res.message || 'Error cerrando ticket', 'error');
                     }
                 }).fail(function(xhr){
-                    alert('Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText));
+                    Swal.fire('Error', 'Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText), 'error');
                 });
+            });
         });
 
+        // Change service: keep row visible so employee can continue managing
         $(document).on('click', '.cambiar-btn', function(){
-            var id = $(this).data('id');
-            var newService = prompt('Ingrese el ID del servicio destino (ej. 1 para Caja, 2 para Atención):');
-            if (newService === null) return; // cancel
-            newService = newService.trim();
-            if (newService === '' || isNaN(newService)) { alert('ID de servicio inválido'); return; }
-            if (!confirm('Cambiar servicio del ticket '+id+' al servicio id '+newService+'?')) return;
-            apiUpdate({ id: id, action: 'change_service', service_id: newService })
-                .done(function(res){
-                    if(res && res.success){
-                        location.reload();
-                    } else {
-                        alert(res.message || 'Error cambiando servicio');
-                    }
-                }).fail(function(xhr){
-                    alert('Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText));
+            var $btn = $(this);
+            var id = $btn.data('id');
+            var code = $btn.data('code') || '';
+            Swal.fire({
+                title: 'Cambiar servicio',
+                input: 'text',
+                inputLabel: 'Ingrese el ID del servicio destino (ej. 1 para Caja, 2 para Atención):',
+                inputPlaceholder: 'ID del servicio',
+                showCancelButton: true,
+                confirmButtonText: 'Cambiar',
+                cancelButtonText: 'Cancelar'
+            }).then(function(result){
+                if(!result.isConfirmed) return;
+                var newService = (result.value || '').toString().trim();
+                if (newService === '' || isNaN(newService)) { Swal.fire('Error', 'ID de servicio inválido', 'error'); return; }
+                Swal.fire({ title: 'Confirmar', text: 'Cambiar servicio del ticket '+id+' al servicio id '+newService+'?', icon: 'question', showCancelButton:true, confirmButtonText:'Sí, cambiar', cancelButtonText:'Cancelar' }).then(function(c){
+                    if(!c.isConfirmed) return;
+                    apiUpdate({ id: id, action: 'change_service', service_id: newService })
+                    .done(function(res){
+                        if(res && res.success){
+                            var payload = { event: 'ticket_changed', action: 'change_service', id: id, newService: newService, code: code || res.code || '', ts: Date.now(), serviceDeskId: window.CURRENT_DESK_ID, serviceDeskUserId: window.CURRENT_USER_ID, serviceDeskName: window.CURRENT_USER_NAME };
+                            try{ localStorage.setItem('ticket_event', JSON.stringify(payload)); }catch(e){}
+                            try{ if('BroadcastChannel' in window){ (new BroadcastChannel('ticket_events')).postMessage(payload); } }catch(e){}
+                            var $row = $btn.closest('tr');
+                            if($row.find('.badge-service').length === 0){
+                                $row.find('td:first-child').append(' <span class="badge bg-secondary ms-2 badge-service">S:'+newService+'</span>');
+                            } else {
+                                $row.find('.badge-service').text('S:'+newService);
+                            }
+                            Swal.fire({ icon: 'success', title: 'Servicio cambiado', toast:true, position:'top-end', timer:1500, showConfirmButton:false });
+                        } else {
+                            Swal.fire('Error', res.message || 'Error cambiando servicio', 'error');
+                        }
+                    }).fail(function(xhr){
+                        Swal.fire('Error', 'Error en la petición: ' + (xhr.responseJSON?.message || xhr.responseText || xhr.statusText), 'error');
+                    });
                 });
+            });
         });
+        
+        // Sync listener: respond to events from other Home tabs
+        function handleExternalEvent(payload){
+            try{
+                if(!payload || payload.event !== 'ticket_changed') return;
+                var id = payload.id;
+                var action = payload.action;
+                var originSD = payload.serviceDeskId || payload.service_desk_id || null;
+                console.log('Home: external event', payload);
+
+                // Ignore events originated from this desk for UI duplication
+                if(originSD && originSD == window.CURRENT_DESK_ID) {
+                    // still handle 'close' if needed
+                    if(action === 'close'){
+                        $('button.tomar-btn[data-id="'+id+'"]').closest('tr').remove();
+                    }
+                    return;
+                }
+
+                if(action === 'take'){
+                    // mark the ticket as taken by another operator instead of removing it
+                    var $btn = $('button.tomar-btn[data-id="'+id+'"]');
+                    if($btn.length){
+                        var $row = $btn.closest('tr');
+                        // disable tomar for others
+                        $btn.prop('disabled', true).removeClass('btn-success').addClass('btn-secondary');
+                        // disable cerrar/cambiar for other users
+                        $row.find('.cerrar-btn').prop('disabled', true).addClass('disabled');
+                        $row.find('.cambiar-btn').prop('disabled', true).addClass('disabled');
+                        // set data-taken-by and show badge with name
+                        $row.attr('data-taken-by', originSD || '');
+                        var name = payload.serviceDeskName || originSD || 'Usuario';
+                        if($row.find('.badge-taken-by').length === 0){
+                            $row.find('td:first-child').append(' <span class="badge bg-warning ms-2 badge-taken-by">Tomado por: '+name+'</span>');
+                        } else {
+                            $row.find('.badge-taken-by').text('Tomado por: '+name);
+                        }
+                    }
+                } else if(action === 'close'){
+                    $('button.tomar-btn[data-id="'+id+'"], button.cerrar-btn[data-id="'+id+'"], button.cambiar-btn[data-id="'+id+'"]').closest('tr').remove();
+                } else if(action === 'change_service'){
+                    var $btn = $('button.tomar-btn[data-id="'+id+'"], button.cerrar-btn[data-id="'+id+'"], button.cambiar-btn[data-id="'+id+'"]').first();
+                    if($btn.length){
+                        var $row = $btn.closest('tr');
+                        var svc = payload.newService || payload.service_id || '';
+                        if($row.find('.badge-service').length === 0){
+                            $row.find('td:first-child').append(' <span class="badge bg-secondary ms-2 badge-service">S:'+svc+'</span>');
+                        } else {
+                            $row.find('.badge-service').text('S:'+svc);
+                        }
+                    }
+                }
+            }catch(e){ console.warn('handleExternalEvent error', e); }
+        }
+
+        // storage listener (other tabs)
+        window.addEventListener('storage', function(e){
+            if(!e.key) return;
+            if(e.key === 'ticket_event'){
+                try{
+                    var payload = JSON.parse(e.newValue || '{}');
+                    handleExternalEvent(payload);
+                }catch(err){ console.error('home storage parse error', err); }
+            }
+        });
+
+        // BroadcastChannel listener
+        try{
+            if('BroadcastChannel' in window){
+                const bcHome = new BroadcastChannel('ticket_events');
+                bcHome.addEventListener('message', function(ev){
+                    try{
+                        var payload = ev.data;
+                        // ignore messages originated in this same tab
+                        if(payload && payload.serviceDeskId && payload.serviceDeskId == window.CURRENT_DESK_ID) return;
+                        handleExternalEvent(payload);
+                    }catch(err){ console.error('home bc msg err', err); }
+                });
+            }
+        }catch(e){ console.warn('BroadcastChannel not available (home)', e); }
     })();
 </script>

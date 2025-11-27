@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS Tickets (
 	service_id INT NOT NULL,
 	client_type_id INT NOT NULL,
 	status_id INT NOT NULL,
-	user_id INT NOT NULL,
+	user_id INT NULL,
 	date_time DATETIME DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT fk_ticket_service FOREIGN KEY (service_id) REFERENCES Services(id),
 	CONSTRAINT fk_ticket_client_type FOREIGN KEY (client_type_id) REFERENCES ClientTypes(id),

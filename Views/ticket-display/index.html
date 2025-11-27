@@ -123,12 +123,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="font-weight:800;color:#b71c29;text-align:center; font-size: 2.5rem;">C-14</td>
-                            <td style="font-weight:800;color:var(--theme-red-primary);text-align:center; font-size: 2.5rem;">4</td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:800;color:#b71c29;text-align:center; font-size: 2.5rem;">MC-02</td>
-                            <td style="font-weight:800;color:var(--theme-red-primary);text-align:center; font-size: 2.5rem;">1</td>
+                            
                         </tr>
                     </tbody>
                 </table>
@@ -149,10 +144,13 @@
         document.getElementById('clock').textContent = `${h}:${m} a.m.`;
     }
     updateClock(); setInterval(updateClock,60000);
+    // local map of taken tickets (id -> { id, code, serviceDeskId, ts })
+    const takenMap = {};
     
     // Fetch tickets (abierto + espera) and update display every 5 seconds
     async function refreshTickets(){
         try {
+            console.log('refreshTickets: start');
             const body = new URLSearchParams();
             body.append('uid','consultasAPI');
             body.append('pw','API*Data123*');
@@ -162,36 +160,153 @@
             const json = await res.json();
             if (!json.success) throw new Error(json.message || 'API error');
 
-            const current = json.current;
-            const queue = json.queue || [];
+            console.log('refreshTickets: got json', json);
 
-            const ticketNumEl = document.querySelector('.ticket-num');
-            if (current) {
-                ticketNumEl.textContent = current.code;
-            } else if (queue.length>0) {
-                ticketNumEl.textContent = queue[0].code;
-            } else {
-                ticketNumEl.textContent = '--';
-            }
+            // Prefer explicit 'taken' list returned by API, otherwise use 'current' if present
+            const taken = Array.isArray(json.taken) ? json.taken : (json.current ? (Array.isArray(json.current) ? json.current : [json.current]) : []);
 
-            // populate next two rows
+            // merge API taken list with local takenMap (events) so we can show serviceDeskId when API doesn't include it
+            const merged = taken.map(it=>{
+                const id = it.id || it.ticket_id || it.ticket_code || it.code;
+                const key = id;
+                const local = takenMap[key];
+                return Object.assign({}, it, local ? { serviceDeskId: local.serviceDeskId, ts: local.ts } : {});
+            });
+
+            // also include any local taken items that API hasn't yet returned (recent actions)
+            Object.keys(takenMap).forEach(k=>{
+                if(!merged.find(x=> (x.id && x.id == k) || (x.code && x.code == k) || (x.ticket_code && x.ticket_code == k) )){
+                    merged.push(takenMap[k]);
+                }
+            });
+
+            // Now ensure only one ticket per serviceDeskId: keep the most recent per desk
+            const byDesk = {};
+            merged.forEach(item => {
+                const sd = extractServiceDeskId(item);
+                const ts = item.ts || Date.now();
+                if(!sd){
+                    // ignore items without a serviceDeskId (not taken)
+                    return;
+                }
+                if(!byDesk[sd] || (byDesk[sd].ts || 0) < ts){
+                    byDesk[sd] = Object.assign({}, item, { serviceDeskId: sd, ts });
+                }
+            });
+            const finalList = Object.values(byDesk).sort((a,b)=> (b.ts||0) - (a.ts||0));
+
+            // update main ticket display (first taken) if present
+            try{
+                const ticketNumEl = document.querySelector('.ticket-num');
+                if(ticketNumEl){
+                    if (finalList.length > 0) {
+                        ticketNumEl.textContent = finalList[0].code || finalList[0].ticket_code || finalList[0].id || '--';
+                    } else {
+                        ticketNumEl.textContent = '--';
+                    }
+                }
+            } catch(e){ console.warn('refreshTickets: could not update main ticket element', e); }
+
+            // populate rows with tickets that were taken (do not show queue)
             const tbody = document.querySelector('.table-tickets tbody');
             tbody.innerHTML = '';
 
-            // show next two from queue (if current was taken from queue, queue already excludes it)
-            const toShow = queue.slice(0,2);
+            // helper to extract caja/serviceDesk id from different API shapes
+            function extractServiceDeskId(item){
+                if(!item) return '';
+                return item.serviceDeskId || item.service_desk_id || item.servicedesk_id || item.served_by || item.user_id || (item.servicedesk && (item.servicedesk.id || item.servicedesk.user_id)) || item.caja || item.box || '';
+            }
+
+            // helper to extract desk name if provided by API
+            function extractServiceDeskName(item){
+                if(!item) return '';
+                return item.serviceDeskName || item.desk_name || item.service_desk_name || (item.servicedesk && (item.servicedesk.name || item.servicedesk.desk_name)) || '';
+            }
+
+            const toShow = finalList; // show one ticket per serviceDesk (most recent)
             for (let i=0;i<toShow.length;i++){
+                const it = toShow[i];
+                const code = it.code || it.ticket_code || it.id || it.ticket || '--';
+                const sdId = extractServiceDeskId(it) || '';
+                const sdName = extractServiceDeskName(it) || '';
+                const cajaDisplay = sdName ? sdName : (sdId ? String(sdId) : '--');
                 const tr = document.createElement('tr');
-                const td1 = document.createElement('td'); td1.className='h5'; td1.style.fontWeight='800'; td1.style.color='#b71c29'; td1.style.textAlign='center'; td1.textContent = toShow[i].code;
-                const td2 = document.createElement('td'); td2.className='h5'; td2.style.fontWeight='800'; td2.style.color='var(--theme-red-primary)'; td2.style.textAlign='center'; td2.textContent = toShow[i].service || '';
+                const td1 = document.createElement('td'); td1.className='h5'; td1.style.fontWeight='800'; td1.style.color='#b71c29'; td1.style.textAlign='center'; td1.textContent = code;
+                const td2 = document.createElement('td'); td2.className='h5'; td2.style.fontWeight='800'; td2.style.color='var(--theme-red-primary)'; td2.style.textAlign='center';
+                td2.textContent = cajaDisplay;
                 tr.appendChild(td1); tr.appendChild(td2); tbody.appendChild(tr);
             }
+
+            console.log('refreshTickets: rendered', toShow.length, 'rows');
 
         } catch (err) {
             console.error('Error refreshing tickets:', err);
         }
     }
     refreshTickets(); setInterval(refreshTickets, 5000);
+    // Listen for ticket events from other tabs (Home) and refresh immediately
+    window.addEventListener('storage', function(e){
+        if(!e.key) return;
+        if(e.key === 'ticket_event'){
+            try{
+                var payload = JSON.parse(e.newValue || '{}');
+                if(payload && payload.event === 'ticket_changed'){
+                    // update local takenMap according to action
+                    try{
+                        var act = payload.action;
+                        var tid = payload.id;
+                        if(act === 'take'){
+                            takenMap[tid] = { id: tid, code: payload.code || payload.ticket_code || '', serviceDeskId: payload.serviceDeskId || payload.service_desk_id || payload.served_by || null, ts: payload.ts || Date.now() };
+                        } else if(act === 'close'){
+                            delete takenMap[tid];
+                        } else if(act === 'change_service'){
+                            // If payload contains serviceDeskId (meaning someone is attending it), set/update takenMap
+                            if(payload.serviceDeskId){
+                                takenMap[tid] = Object.assign({}, takenMap[tid] || {}, { id: tid, code: payload.code || payload.ticket_code || '', serviceDeskId: payload.serviceDeskId, ts: payload.ts || Date.now() });
+                            } else if(takenMap[tid]){
+                                // otherwise, update existing entry's serviceDeskId to newService if provided
+                                takenMap[tid].serviceDeskId = payload.newService || payload.service_id || takenMap[tid].serviceDeskId;
+                            }
+                        }
+                    }catch(e){ console.warn('storage payload handling error', e); }
+                    // immediate refresh to reflect change
+                    refreshTickets();
+                }
+            }catch(err){ console.error('ticket display storage parse error', err); }
+        }
+    });
+
+    // BroadcastChannel (faster) listener if available
+    try{
+        if('BroadcastChannel' in window){
+            const bc = new BroadcastChannel('ticket_events');
+            bc.addEventListener('message', function(ev){
+                    try{
+                        const payload = ev.data;
+                        if(payload && payload.event === 'ticket_changed'){
+                            console.log('broadcastchannel: received ticket_changed', payload);
+                            // mirror same handling as storage listener
+                            try{
+                                var act = payload.action;
+                                var tid = payload.id;
+                                if(act === 'take'){
+                                    takenMap[tid] = { id: tid, code: payload.code || payload.ticket_code || '', serviceDeskId: payload.serviceDeskId || payload.service_desk_id || payload.served_by || null, ts: payload.ts || Date.now() };
+                                } else if(act === 'close'){
+                                    delete takenMap[tid];
+                                } else if(act === 'change_service'){
+                                    if(payload.serviceDeskId){
+                                        takenMap[tid] = Object.assign({}, takenMap[tid] || {}, { id: tid, code: payload.code || payload.ticket_code || '', serviceDeskId: payload.serviceDeskId, ts: payload.ts || Date.now() });
+                                    } else if(takenMap[tid]){
+                                        takenMap[tid].serviceDeskId = payload.newService || payload.service_id || takenMap[tid].serviceDeskId;
+                                    }
+                                }
+                            }catch(e){ console.warn('bc payload handling error', e); }
+                            refreshTickets();
+                        }
+                }catch(err){ console.error('bc message parse err', err); }
+            });
+        }
+    }catch(e){ console.warn('BroadcastChannel not available', e); }
     </script>
     <script>
     // Simple carousel: alterna imágenes dentro de #adCarousel cada 5 segundos
