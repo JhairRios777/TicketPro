@@ -15,12 +15,12 @@
                         
                         <div class="form-group">
                             <label for="name" class="form-label">Nombre del Servicio</label>
-                            <input placeholder="Ej: Caja, Atención al Cliente" type="text" name="name" id="name" class="form-control" value="<?php echo $JData->name; ?>">
+                            <input autocomplete="off" placeholder="Ej: Caja, Atención al Cliente" type="text" name="name" id="name" class="form-control" value="<?php echo $JData->name; ?>">
                         </div> <br>
                         
                         <div class="form-group">
                             <label for="description" class="form-label">Descripción</label>
-                            <input placeholder="Ej: Servicio para atención al cliente" rows="4" type="text" name="description" id="description" class="form-control" value="<?php echo $JData->description; ?>">
+                            <input autocomplete="off" placeholder="Ej: Servicio para atención al cliente" rows="4" type="text" name="description" id="description" class="form-control" value="<?php echo $JData->description; ?>">
                         </div> <br>
 
                         <div class="form-group">

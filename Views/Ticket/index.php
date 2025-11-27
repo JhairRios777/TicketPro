@@ -50,12 +50,12 @@
             <thead>
                 <tr>
                     <th width="10%">Código de Ticket</th>
-                    <th width="10%">Servicio</th>
-                    <th width="15%">Tipo de Cliente</th>
-                    <th width="15%">Estado del Ticket</th>
+                    <th width="15%">Servicio</th>
+                    <th width="10%">Tipo de Cliente</th>
+                    <th width="10%">Estado del Ticket</th>
                     <th width="10%">Usuario</th>
                     <th width="20%">Fecha y Hora de Creación</th>
-                    <th>Acciones</th>
+                    <th width="15%">Acciones</th>
                 </tr>
             </thead>
 

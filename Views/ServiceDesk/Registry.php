@@ -28,7 +28,7 @@
 
                     <div class="form-group">
                         <label for="desk_name" class="form-label">Nombre de la Estación</label>
-                        <input type="text" name="desk_name" id="desk_name" class="form-control" placeholder="Nombre de la Estación" value="<?php echo $JData->desk_name; ?>">
+                        <input autocomplete="off" type="text" name="desk_name" id="desk_name" class="form-control" placeholder="Nombre de la Estación" value="<?php echo $JData->desk_name; ?>">
                     </div> <br>
 
                     <div class="form-group">

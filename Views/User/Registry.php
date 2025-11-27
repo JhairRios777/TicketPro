@@ -23,22 +23,22 @@
                     <input type="hidden" name="Registrar" id="Registrar" value="1">
 
                     <div class="form-group">
-                        <input require type="hidden" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
+                        <input  require type="hidden" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
                     </div> <br>
 
                     <div class="form-group">
                         <label for="name" class="form-label">Nombre Completo</label>
-                        <input type="text" name="name" id="name" class="form-control" value="<?php echo $JData->name; ?>">
+                        <input autocomplete="off" type="text" name="name" id="name" class="form-control" value="<?php echo $JData->name; ?>">
                     </div> <br>
 
                     <div class="form-group">
                         <label for="username" class="form-label">Usuario</label>
-                        <input type="text" name="username" id="username" class="form-control" value="<?php echo $JData->username; ?>">
+                        <input autocomplete="off" type="text" name="username" id="username" class="form-control" value="<?php echo $JData->username; ?>">
                     </div> <br>
 
                     <div class="form-group">
                         <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" name="password" id="password" class="form-control" value="<?php echo $JData->password; ?>">
+                        <input autocomplete="off" type="password" name="password" id="password" class="form-control" value="<?php echo $JData->password; ?>">
                     </div> <br>
 
                     <div class="form-group">
@@ -69,12 +69,12 @@
 
                     <div class="form-group">
                         <label for="email" class="form-label">Correo</label>
-                        <input type="text" name="email" id="email" class="form-control" value="<?php echo $JData->email; ?>">
+                        <input autocomplete="off" type="text" name="email" id="email" class="form-control" value="<?php echo $JData->email; ?>">
                     </div> <br>
 
                     <div class="form-group">
                         <label for="phone" class="form-label">Teléfono</label>
-                        <input type="text" name="phone" id="phone" class="form-control" value="<?php echo $JData->phone; ?>">
+                        <input autocomplete="off" type="text" name="phone" id="phone" class="form-control" value="<?php echo $JData->phone; ?>">
                     </div> <br>
 
                     <div class="form-group">

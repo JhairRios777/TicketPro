@@ -16,12 +16,12 @@
                         
                         <div class="form-group">
                             <label for="branch_name" class="form-label">Nombre de la Sucursal</label>
-                            <input placeholder="Ej: Sucursal Centro, Sucursal Norte" type="text" name="branch_name" id="branch_name" class="form-control" value="<?php echo $JData->branch_name; ?>">
+                            <input autocomplete="off" placeholder="Ej: Sucursal Centro, Sucursal Norte" type="text" name="branch_name" id="branch_name" class="form-control" value="<?php echo $JData->branch_name; ?>">
                         </div> <br>
                         
                         <div class="form-group">
                             <label for="location" class="form-label">Ubicación</label>
-                            <input placeholder="Ej: Calle 123, San Pedro Sula" rows="4" type="text" name="location" id="location" class="form-control" value="<?php echo $JData->location; ?>">
+                            <input autocomplete="off" placeholder="Ej: Calle 123, San Pedro Sula" rows="4" type="text" name="location" id="location" class="form-control" value="<?php echo $JData->location; ?>">
                         </div> <br>
 
                         <div class="form-group">

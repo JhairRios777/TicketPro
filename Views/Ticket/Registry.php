@@ -35,7 +35,7 @@
 
                     <div class="form-group">
                         <label for="ticket_code" class="form-label">Código de Ticket</label>
-                        <input type="text" name="ticket_code" id="ticket_code" class="form-control" value="<?php echo $JData->ticket_code; ?>">
+                        <input autocomplete="off" type="text" name="ticket_code" id="ticket_code" class="form-control" value="<?php echo $JData->ticket_code; ?>">
                     </div> <br>
 
                     <div class="form-group">

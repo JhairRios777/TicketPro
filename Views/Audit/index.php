@@ -34,12 +34,11 @@
    
 ?>
 
-<h1>Vista Auditorías</h1>
+<h1>Auditoría</h1>
 
 <div class="card mb-grid">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <div class="card-header-title">Lista de Auditorias</div>
-
+        <div class="card-header-title">Lista de Auditorías</div>
        
 
 </div>

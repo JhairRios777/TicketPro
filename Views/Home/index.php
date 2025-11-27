@@ -86,7 +86,7 @@
                                 <table class="table table-sm mb-0">
                                     <thead>
                                         <tr>
-                                            <th>#Ticket</th>
+                                            <th>Ticket</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -124,7 +124,7 @@
                                 <table class="table table-sm mb-0">
                                     <thead>
                                         <tr>
-                                            <th>#Ticket</th>
+                                            <th>Ticket</th>
                                             <th>Caja</th>
                                         </tr>
                                     </thead>
@@ -162,7 +162,7 @@
                                 <table class="table table-sm mb-0">
                                     <thead>
                                         <tr>
-                                            <th>#Ticket</th>
+                                            <th>Ticket</th>
                                             <th>Caja</th>
                                         </tr>
                                     </thead>

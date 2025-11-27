@@ -69,10 +69,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="login-body">
-    <!-- Botón de modo oscuro -->
+    <!-- Botón de modo oscuro 
     <button class="btn-theme-toggle-login" id="themeToggleLogin" type="button" aria-label="Alternar tema">
         <i class="fas fa-moon" id="themeIconLogin"></i>
-    </button>
+    </button>-->
     
     <div class="login-container">
         <div class="login-wrapper">
@@ -80,7 +80,7 @@
             <div class="login-header text-center mb-5">
                 <div class="login-logo mb-4">
                     <div class="logo-glow"></div>
-                    <i class="fas fa-cube"></i>
+                    <img class="login-logo" width="20" height="40" src="..\\Content\\Demo\\img\\LOGO_TP_ROJO_bg.png" alt="">
                 </div>
                 <h1 class="login-title mb-2">Bienvenido</h1>
                 <p class="login-subtitle">Ingresa tus credenciales para continuar</p>
@@ -94,7 +94,7 @@
                         <div class="input-wrapper">
                             <i class="input-icon fas fa-user"></i>
                             <input type="text" class="form-control-modern" id="username" name="username"
-                                 value="<?php echo $username ?>" required>
+                                 value="<?php echo $username ?>" required autocomplete="off">
                             <label for="username" class="floating-label">Usuario</label>
                             <div class="input-line"></div>
                         </div>
@@ -107,9 +107,7 @@
                             <input type="password" class="form-control-modern" id="password" name="password" required>
                             <label for="password" class="floating-label">Contraseña</label>
                             <div class="input-line"></div>
-                            <button class="btn-toggle-password" type="button" id="togglePassword" tabindex="-1">
-                                <i class="fas fa-eye" id="eyeIcon"></i>
-                            </button>
+                            
                         </div>
                     </div>
 

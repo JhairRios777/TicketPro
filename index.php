@@ -16,17 +16,17 @@
     // strpos verifica si '/Reporte/' existe en la ruta ($path).
     $is_pdf_report = (strpos($path, '/Report/') !== false);
 
-    if(!isset($_SESSION["system"]["username"])){
+    if(!isset($_SESSION["system"]["username"]) && $path !== '/Login'){
         header("Location: /Login");
         exit();
     }
 
     Config\AutoLoad::run();
-    Config\AutoLoad::run();
+    //Config\AutoLoad::run();
 
     // If the request is for generating a PDF (Audit/View/{id}) we must not
     // include the site template because it outputs HTML which breaks PDF headers.
-    $rawUrl = isset($_GET['url']) ? $_GET['url'] : '';
+    /*$rawUrl = isset($_GET['url']) ? $_GET['url'] : '';
     $isPdfRoute = false;
     if (!empty($rawUrl)) {
         $parts = explode('/', trim($rawUrl, '/'));
@@ -36,6 +36,11 @@
     }
 
     if (!$isPdfRoute) {
+        include_once "Template\index.php";
+    }*/
+
+    // Solo incluye la plantilla HTML si NO es un reporte PDF
+    if (!$is_pdf_report) {
         include_once "Template\index.php";
     }
 
