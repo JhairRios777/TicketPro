@@ -20,19 +20,52 @@
         <!-- Tablas de Tickets por categoría (muestra ticket y caja que los atiende) -->
         <div class="col-12 mb-4">
             <?php
-                // Datos estáticos de ejemplo (sin BD): cada elemento tiene id y caja
-                $normalTickets = [
-                    ['id' => '1256', 'caja' => 'Caja 1'],
-                ];
+                // Obtener tickets desde la base de datos y clasificarlos para el panel
+                $normalTickets = [];
+                $customerTickets = [];
+                $premiumTickets = [];
 
-                $customerTickets = [
-                    ['id' => '1255', 'caja' => 'Caja A']
-                ];
+                try {
+                    $pdo = new \Config\Conexion();
+                    $pdo = $pdo->getConexion();
 
-                $premiumTickets = [
-                    ['id' => '1250', 'caja' => 'Caja P1']
+                        // Obtener tickets en cola: buscar por nombre de estado que contenga 'espera'
+                        // (más robusto que asumir un id fijo, evita discrepancias entre entornos)
+                        $sql = "SELECT t.id, t.ticket_code, s.name AS service_name, ct.name AS client_type_name, ts.name AS status_name
+                            FROM Tickets t
+                            LEFT JOIN Services s ON s.id = t.service_id
+                            LEFT JOIN ClientTypes ct ON ct.id = t.client_type_id
+                            LEFT JOIN TicketStatuses ts ON ts.id = t.status_id
+                            WHERE LOWER(COALESCE(ts.name, '')) LIKE '%espera%'
+                            ORDER BY t.id DESC";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute();
+                    $all = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-                ];
+                    foreach ($all as $row) {
+                        $id = $row['id'];
+                        $ticket_code = isset($row['ticket_code']) ? $row['ticket_code'] : $id;
+                        $serviceName = isset($row['service_name']) ? $row['service_name'] : '';
+                        $clientTypeName = isset($row['client_type_name']) ? $row['client_type_name'] : '';
+
+                        // Clasificación heurística (ajustable según datos reales)
+                        $ctLower = strtolower($clientTypeName);
+                        $sLower = strtolower($serviceName);
+
+                        $item = ['id' => $ticket_code, 'caja' => $serviceName];
+
+                        if (strpos($ctLower, 'prefer') !== false || strpos($ctLower, 'preferencial') !== false) {
+                            $premiumTickets[] = $item;
+                        } elseif (strpos($sLower, 'atenc') !== false || strpos($sLower, 'cliente') !== false || strpos($ctLower, 'atenc') !== false) {
+                            $customerTickets[] = $item;
+                        } else {
+                            $normalTickets[] = $item;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // En caso de error con la BD, dejar arrays vacíos pero registrar para depuración
+                    @file_put_contents(__DIR__ . '/../../APIR/logs/home_errors.log', '['.date('Y-m-d H:i:s').'] Home list error: '.$e->getMessage()."\n", FILE_APPEND);
+                }
             ?>
 
             <div class="row">

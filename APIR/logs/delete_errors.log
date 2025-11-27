@@ -93,3 +93,14 @@ Trace:#0 C:\xampp\htdocs\TicketPro\APIR\Method\Delete.php(75): PDOStatement->exe
 Trace:#0 C:\xampp\htdocs\TicketPro\APIR\Method\Delete.php(83): PDOStatement->execute()
 #1 C:\xampp\htdocs\TicketPro\APIR\index.php(37): require_once('C:\\xampp\\htdocs...')
 #2 {main}
+[2025-11-27 08:37:16] deleted ticket id=8 audits_deleted=3 tickets_deleted=1
+[2025-11-27 08:37:20] deleted ticket id=10 audits_deleted=2 tickets_deleted=1
+[2025-11-27 08:37:26] deleted ticket id=11 audits_deleted=2 tickets_deleted=1
+[2025-11-27 08:37:31] deleted ticket id=15 audits_deleted=3 tickets_deleted=1
+[2025-11-27 08:37:42] deleted ticket id=12 audits_deleted=2 tickets_deleted=1
+[2025-11-27 08:37:46] deleted ticket id=14 audits_deleted=2 tickets_deleted=1
+[2025-11-27 08:37:51] deleted ticket id=13 audits_deleted=1 tickets_deleted=1
+[2025-11-27 08:37:57] deleted ticket id=9 audits_deleted=3 tickets_deleted=1
+[2025-11-27 08:38:02] deleted ticket id=6 audits_deleted=2 tickets_deleted=1
+[2025-11-27 08:38:07] deleted ticket id=5 audits_deleted=3 tickets_deleted=1
+[2025-11-27 08:38:11] deleted ticket id=4 audits_deleted=3 tickets_deleted=1
