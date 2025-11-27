@@ -72,12 +72,6 @@
                         "Nombre" => "Estados de Ticket",
                         "Url" => "/TicketStatus",
                         "Icono" => "fas fa-check-circle"
-                    ),
-                    "Historial de Tickets" => array(
-                        "Id" => 11,
-                        "Nombre" => "Historial de Tickets",
-                        "Url" => "/TicketHistory",
-                        "Icono" => "fas fa-history"
                     )
                 );
 

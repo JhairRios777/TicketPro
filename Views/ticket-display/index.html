@@ -31,9 +31,47 @@
         .td-left-col { flex: 0 0 50%; padding: 1rem; }
         .td-right-col { flex: 0 0 50%; padding: 1rem; display:flex; align-items:flex-start; justify-content:center }
 
+        /* Imagen de publicidad (versión reducida respecto al tamaño principal) */
+        .ad-carousel {
+            width: 85%;
+            max-width: 900px;
+            height: calc(80vh - 80px);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            border-radius: 8px;
+            object-fit: contain;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            pointer-events: none;
+        }
+
+        .ad-image.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width:900px) {
+            .ad-carousel { width: 95%; height: 30vh; }
+            .td-left-col { padding: 0.5rem; }
+        }
+
         .image-placeholder {
             width:100%;
-            height:calc(60vh - 60px); /* ajustar por la barra de monedas ahora visible */
+            height:calc(80vh - 80px); /* ajustar por la barra de monedas ahora visible */
             background:var(--theme-red-primary);
             border-radius:8px;
             display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:2.5rem;
@@ -59,37 +97,38 @@
 <body class="theme-red">
     <header class="topbar" style="height:70px;background:var(--theme-red-primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;">
         <div class="brand"><img src="../../Content/Demo/img/LOGO_BAC.png" alt="Logo BAC" class="img-logo-selection"></div>
-        <div id="clock" style="font-weight:700;font-size:1.1rem">--:--</div>
+        <div id="clock" style="font-weight:700;font-size:2.5rem">--:--</div>
     </header>
 
     <div class="content-container" style="display:flex;align-items:stretch;padding:1rem;margin-top:60px">
         <!-- Left: cuadro rojo donde se colocará la imagen (75%) -->
-        <div class="td-left-col">
-            <div class="image-placeholder">IMAGEN</div>
+        <div class="td-left-col" style="display:flex;align-items:center;justify-content:center;">
+            <div class="ad-carousel" id="adCarousel" aria-live="polite" aria-atomic="true">
+                <img src="../../Content/Demo/img/publicidad_1.png" alt="Publicidad 1" class="ad-image">
+                <img src="../../Content/Demo/img/publicidad_2.png" alt="Publicidad 2" class="ad-image">
+                <img src="../../Content/Demo/img/publicidad_3.png" alt="Publicidad 3" class="ad-image">
+                <img src="../../Content/Demo/img/publicidad_4.png" alt="Publicidad 4" class="ad-image">
+            </div>
         </div>
 
         <!-- Right: tabla de tickets (50%) -->
         <div class="td-right-col">
             <div style="width:100%;max-width:680px">
-                <div style="text-align:center;margin-bottom:0">
-                    <div class="ticket-title" style="color:var(--theme-red-primary);font-weight:900">TICKET</div>
-                    <div class="ticket-num" style="color:var(--theme-red-primary);">S-23</div>
-                </div>
                 <table class="table table-striped table-tickets" style="background:#fff;border-radius:8px;overflow:hidden;margin-top:1rem">
                     <thead>
                         <tr>
-                            <th style="width:70%;text-align:center;color:var(--theme-red-primary);">Próximos</th>
-                            <th style="width:30%;text-align:center;color:var(--theme-red-primary);">Caja</th>
+                            <th style="font-size:40px;width:50%;text-align:center;color:var(--theme-red-primary);">Ticket</th>
+                            <th style="font-size:40px;width:50%;text-align:center;color:var(--theme-red-primary);">Caja</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="h5" style="font-weight:800;color:#b71c29;text-align:center">C-14</td>
-                            <td class="h5" style="font-weight:800;color:var(--theme-red-primary);text-align:center">04</td>
+                            <td style="font-weight:800;color:#b71c29;text-align:center; font-size: 2.5rem;">C-14</td>
+                            <td style="font-weight:800;color:var(--theme-red-primary);text-align:center; font-size: 2.5rem;">4</td>
                         </tr>
                         <tr>
-                            <td class="h5" style="font-weight:800;color:#b71c29;text-align:center">MC-02</td>
-                            <td class="h5" style="font-weight:800;color:var(--theme-red-primary);text-align:center">01</td>
+                            <td style="font-weight:800;color:#b71c29;text-align:center; font-size: 2.5rem;">MC-02</td>
+                            <td style="font-weight:800;color:var(--theme-red-primary);text-align:center; font-size: 2.5rem;">1</td>
                         </tr>
                     </tbody>
                 </table>
@@ -99,7 +138,7 @@
 
     <!-- Barra de monedas (sticky) visible bajo el header -->
     <div class="currency-bar">
-        <div class="rates">USD Compra: 540.00 | Venta: 548.00 &nbsp;&nbsp; | &nbsp;&nbsp; EUR Compra: 590.00 | Venta: 600.00</div>
+        <div class="rates" style="font-size: 2rem;">USD Compra: L. 26.29 | Venta: L. 26.42 &nbsp;&nbsp; | &nbsp;&nbsp; EUR Compra: L. 28.18 | Venta: L. 33.16</div>
     </div>
 
     <script>
@@ -107,7 +146,7 @@
         const d=new Date();
         const h=d.getHours().toString().padStart(2,'0');
         const m=d.getMinutes().toString().padStart(2,'0');
-        document.getElementById('clock').textContent = `${h}:${m} p.m.`;
+        document.getElementById('clock').textContent = `${h}:${m} a.m.`;
     }
     updateClock(); setInterval(updateClock,60000);
     
@@ -153,6 +192,27 @@
         }
     }
     refreshTickets(); setInterval(refreshTickets, 5000);
+    </script>
+    <script>
+    // Simple carousel: alterna imágenes dentro de #adCarousel cada 5 segundos
+    (function(){
+        const INTERVAL = 5000;
+        function initAdCarousel(){
+            const el = document.getElementById('adCarousel');
+            if(!el) return;
+            const imgs = Array.from(el.querySelectorAll('.ad-image'));
+            if(!imgs.length) return;
+            let idx = 0;
+            imgs.forEach((img,i)=> img.classList.toggle('active', i===0));
+            setInterval(()=>{
+                imgs[idx].classList.remove('active');
+                idx = (idx + 1) % imgs.length;
+                imgs[idx].classList.add('active');
+            }, INTERVAL);
+        }
+        if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAdCarousel);
+        else initAdCarousel();
+    })();
     </script>
 </body>
 </html>

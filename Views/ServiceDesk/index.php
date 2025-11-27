@@ -31,6 +31,7 @@
         <table class="table table-actions table-striped table-hover mb-0">
             <thead>
                 <tr>
+                    <th>Número de Estación</th>
                     <th>Nombre de la Estación</th>
                     <th width="20%">Usuario</th>
                     <th>Sucursal</th>
@@ -45,6 +46,7 @@
                     $branchName = isset($branchMap[$Value->branch_id]) ? $branchMap[$Value->branch_id] : $Value->branch_id;
 
                     echo "<tr>";
+                        echo "<td>".$Value-> id."</td>";
                         echo "<td>".$Value-> desk_name."</td>";
                         echo "<td>".$userName."</td>";
                         echo "<td>".$branchName."</td>";
