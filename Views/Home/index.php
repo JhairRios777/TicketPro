@@ -11,7 +11,7 @@
                 <div>
                     <a href="Views/selection/index.html" target="_blank" class="btn btn-primary">Panel Cliente</a>
                     <a href=""></a>
-                    <a href="Views/ticket-display/index.html" target="_blank" class="btn btn-primary">Panel General</a>
+                    <a href="Views/ticket-display/index.html?admin=1" target="_blank" class="btn btn-primary">Panel General</a>
                 </div>
             </div>
         </div>

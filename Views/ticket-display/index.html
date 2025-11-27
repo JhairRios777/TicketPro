@@ -7,7 +7,7 @@
     <link href="/Content/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/Content/dist/css/custom-themes.css" rel="stylesheet">
     <style>
-        body{min-height:100vh;display:flex;flex-direction:column}
+        body{min-height:100vh;display:flex;flex-direction:column;background-color:#e2e2e2}
         .topbar{height:70px;background:var(--theme-red-primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem}
         .brand{font-weight:700;font-size:2rem}
         .content{display:flex;flex:1;align-items:stretch}
@@ -35,7 +35,7 @@
         .ad-carousel {
             width: 85%;
             max-width: 900px;
-            height: calc(80vh - 80px);
+            height: calc(90vh - 168px);
             position: relative;
             display: flex;
             align-items: center;
@@ -78,13 +78,29 @@
         }
 
         /* Barra de monedas visible debajo del header */
-        .currency-bar { height:60px; background:#fff; display:flex; align-items:center; justify-content:center; border-top:1px solid rgba(0,0,0,0.06); position:sticky; top:70px; z-index:1000; font-size:1.25rem; }
-        .currency-bar .rates { font-weight:800; color:var(--theme-red-primary); }
+        .currency-bar { height:110px; background:#b60021; display:flex; align-items:center; justify-content:center; border-top:1px solid rgba(0,0,0,0.06); position:sticky; top:70px; z-index:1000; font-size:2rem; }
+        .currency-bar .rates { font-weight:800; color:#fff; }
+
+                /* Ticker (cinta) animada: mantiene estilos y permite pausa al hover
+                    - restauramos la altura original para que no quede delgada
+                    - aseguramos que el contenido llene la altura y esté centrado verticalmente
+                */
+                .currency-bar.ticker-bar { height:110px; overflow:hidden; background:#b60021; }
+                .currency-bar.ticker-bar .ticker { display:flex; align-items:center; gap:3rem; white-space:nowrap; will-change:transform; }
+                .currency-bar.ticker-bar .ticker-item { display:inline-block; color:#fff; font-weight:800; font-size:2.8rem; }
+                .currency-bar.ticker-bar .ticker-wrap{ display:flex; align-items:center; height:100%; }
+                /* animation: translate from right to left */
+                .currency-bar.ticker-bar .ticker-moving { display:flex; align-items:center; height:100%; animation: ticker-scroll linear infinite; }
+                .currency-bar.ticker-bar:hover .ticker-moving { animation-play-state: paused; }
+            @keyframes ticker-scroll {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
 
         /* Textos más grandes para tabla y títulos */
-        .ticket-title { font-size:2.5rem !important; }
-        .ticket-num { font-size:3.5rem !important; }
-        .table-tickets tbody td { font-size:1.5rem; font-weight:800; }
+        .ticket-title { font-size:4rem !important; }
+        .ticket-num { font-size:4rem !important; }
+        .table-tickets tbody td { font-size:3.5rem; font-weight:800; }
 
         @media (max-width:900px) {
             .td-left-col, .td-right-col { flex: 0 0 auto; width:100%; }
@@ -95,15 +111,17 @@
     </style>
 </head>
 <body class="theme-red">
-    <header class="topbar" style="height:70px;background:var(--theme-red-primary);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;">
+    <header class="topbar" style="height:70px;background:var(--theme-red-primary);color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;">
         <div class="brand"><img src="../../Content/Demo/img/LOGO_BAC.png" alt="Logo BAC" class="img-logo-selection"></div>
         <div style="display:flex;align-items:center;gap:12px">
+            <button id="ttsToggle" class="btn btn-sm btn-primary" style="font-weight:700; color: #b60021;">Audio: On</button>
+            <select id="voiceSelect" class="form-input form-input-sm" style="width:340px;display:none;margin-left:8px; background-color: #b60021;border: 0;color: #b60021;"></select>
+            <button id="voiceTest" class="btn btn-sm btn-primary" style="font-weight:700;display:none;margin-left:6px; color:#b60021">Probar voz</button>
             <div id="clock" style="font-weight:700;font-size:2.5rem">--:--</div>
-            <button id="ttsToggle" class="btn btn-outline-light btn-sm" style="font-weight:700">Audio: On</button>
         </div>
     </header>
 
-    <div class="content-container" style="display:flex;align-items:stretch;padding:1rem;margin-top:60px">
+    <div class="content-container" style="display:flex;align-items:stretch;padding:1rem;margin-top:20px">
         <!-- Left: cuadro rojo donde se colocará la imagen (75%) -->
         <div class="td-left-col" style="display:flex;align-items:center;justify-content:center;">
             <div class="ad-carousel" id="adCarousel" aria-live="polite" aria-atomic="true">
@@ -120,8 +138,8 @@
                 <table class="table table-striped table-tickets" style="background:#fff;border-radius:8px;overflow:hidden;margin-top:1rem">
                     <thead>
                         <tr>
-                            <th style="font-size:40px;width:50%;text-align:center;color:var(--theme-red-primary);">Ticket</th>
-                            <th style="font-size:40px;width:50%;text-align:center;color:var(--theme-red-primary);">Caja</th>
+                            <th style="font-size:60px;width:50%;text-align:center;background-color:var(--theme-red-primary);color: #fff;">Ticket</th>
+                            <th style="font-size:60px;width:50%;text-align:center;background-color:var(--theme-red-primary);color: #fff;">Caja</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,9 +152,27 @@
         </div>
     </div>
 
-    <!-- Barra de monedas (sticky) visible bajo el header -->
-    <div class="currency-bar">
-        <div class="rates" style="font-size: 2rem;">USD Compra: L. 26.29 | Venta: L. 26.42 &nbsp;&nbsp; | &nbsp;&nbsp; EUR Compra: L. 28.18 | Venta: L. 33.16</div>
+    <!-- Barra de monedas (ticker) visible bajo el header -->
+    <div class="currency-bar ticker-bar" aria-hidden="false">
+        <div class="ticker-wrap" style="width:100%;">
+            <div id="tickerMoving" class="ticker-moving">
+                <div class="ticker">
+                    <div class="ticker-item">USD Compra: L. 26.29 | Venta: L. 26.42</div>
+                    <div class="ticker-item">EUR Compra: L. 28.18 | Venta: L. 33.16</div>
+                    <div class="ticker-item">Horario de Atención: Lun-Vie 08:00 - 16:00</div>
+                    <div class="ticker-item">Sábados: 08:00 - 12:00 (solo cajeros)</div>
+                    <div class="ticker-item">Tel: 2233-4455 | Soporte: credomatic@bac.hn</div>
+                </div>
+                <!-- duplicate for smooth continuous scroll -->
+                <div class="ticker" aria-hidden="true">
+                    <div class="ticker-item">         USD Compra: L. 26.29 | Venta: L. 26.42</div>
+                    <div class="ticker-item">EUR Compra: L. 28.18 | Venta: L. 33.16</div>
+                    <div class="ticker-item">Horario de Atención: Lun-Vie 08:00 - 16:00</div>
+                    <div class="ticker-item">Sábados: 08:00 - 12:00 (solo cajeros)</div>
+                    <div class="ticker-item">Tel: 2233-4455 | Soporte: soporte@empresa.com</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -234,8 +270,58 @@
     }
 
     if('speechSynthesis' in window){
-        window.speechSynthesis.onvoiceschanged = function(){ selectSpanishVoice(); };
-        selectSpanishVoice();
+        window.speechSynthesis.onvoiceschanged = function(){ populateVoices(); };
+        // try to populate voices now (may be empty until voiceschanged fires)
+        populateVoices();
+    }
+
+    // Fill the voice select element and pick saved voice if any
+    function populateVoices(){
+        if(!('speechSynthesis' in window)) return;
+        const voices = window.speechSynthesis.getVoices() || [];
+        const sel = document.getElementById('voiceSelect');
+        if(!sel) return;
+        // remember current selection
+        const saved = localStorage.getItem('ticket_display_voice') || '';
+        sel.innerHTML = '';
+        voices.forEach(v=>{
+            const opt = document.createElement('option');
+            opt.value = v.name;
+            opt.textContent = `${v.name} (${v.lang})`;
+            sel.appendChild(opt);
+        });
+        // add a quick Spanish-prefer option if no saved
+        if(!saved){
+            const spanish = voices.find(x=> x.lang && x.lang.toLowerCase().startsWith('es')) || voices.find(x=> /spanish/i.test(x.name));
+            if(spanish){
+                setSelectedVoiceByName(spanish.name);
+                sel.value = spanish.name;
+                localStorage.setItem('ticket_display_voice', spanish.name);
+                return;
+            }
+        }
+        if(saved){
+            // try to set previously saved voice
+            const match = voices.find(v=> v.name === saved);
+            if(match){ setSelectedVoiceByName(saved); sel.value = saved; }
+            else { setSelectedVoiceByName(null); }
+        } else {
+            // fallback to default selection
+            setSelectedVoiceByName(null);
+        }
+    }
+
+    function setSelectedVoiceByName(name){
+        if(!('speechSynthesis' in window)) return;
+        const voices = window.speechSynthesis.getVoices() || [];
+        if(!name){
+            // pick Spanish if available else first
+            const v = voices.find(x=> x.lang && x.lang.toLowerCase().startsWith('es')) || voices[0] || null;
+            selectedVoice = v;
+            return;
+        }
+        const found = voices.find(v=> v.name === name) || null;
+        selectedVoice = found;
     }
 
     function speakText(text){
@@ -487,6 +573,29 @@
         }
         // admin visible: reflect saved state
         tbtn.textContent = 'Audio: ' + (ttsEnabled ? 'On' : 'Off');
+        const voiceSel = document.getElementById('voiceSelect');
+        const voiceTestBtn = document.getElementById('voiceTest');
+        if(voiceSel){ voiceSel.style.display = ''; }
+        if(voiceTestBtn){ voiceTestBtn.style.display = ''; }
+        // populate voices immediately (if available)
+        try{ populateVoices(); }catch(e){}
+
+        if(voiceSel){
+            voiceSel.addEventListener('change', function(){
+                const name = this.value || '';
+                try{ setSelectedVoiceByName(name); }catch(e){}
+                try{ if(name) localStorage.setItem('ticket_display_voice', name); else localStorage.removeItem('ticket_display_voice'); }catch(e){}
+            });
+        }
+        if(voiceTestBtn){
+            voiceTestBtn.addEventListener('click', async function(){
+                // ensure audio context created by gesture
+                if(!audioInited){ initAudioContext(); try{ await beep(80,1200); }catch(e){} }
+                // play sample phrase
+                const sample = 'Prueba de voz, ticket Cero Cero Uno en caja prueba.';
+                try{ speakText(sample); }catch(e){ console.warn('voice test failed', e); }
+            });
+        }
         tbtn.addEventListener('click', async function(){
             // initialize audio on first gesture
             if(!audioInited){ initAudioContext(); try{ await beep(80, 1200); }catch(e){} }
@@ -516,6 +625,27 @@
         }
         if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAdCarousel);
         else initAdCarousel();
+    })();
+    </script>
+    <script>
+    // Inicializa velocidad del ticker según ancho del contenido para mantener ritmo razonable
+    (function(){
+        function initTicker(){
+            const moving = document.getElementById('tickerMoving');
+            if(!moving) return;
+            // compute width of first .ticker block
+            const first = moving.querySelector('.ticker');
+            if(!first) return;
+            const w = first.getBoundingClientRect().width;
+            // duration proportional to width (px) - adjust factor for desired speed
+            const pxPerSecond = 120; // pixels per second
+            const duration = Math.max(14, Math.round((w / pxPerSecond)) );
+            moving.style.animationDuration = (duration*2) + 's'; // *2 because duplicated content
+        }
+        if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initTicker);
+        else initTicker();
+        // recalc on resize
+        window.addEventListener('resize', function(){ setTimeout(initTicker,200); });
     })();
     </script>
 </body>
