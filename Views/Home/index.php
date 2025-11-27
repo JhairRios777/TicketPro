@@ -9,7 +9,7 @@
                     <p class="text-muted">Bienvenido al sistema de gestión de tickets</p>
                 </div>
                 <div>
-                    <a href="Views/welcome/index.html" target="_blank" class="btn btn-primary">Panel Cliente</a>
+                    <a href="Views/selection/index.html" target="_blank" class="btn btn-primary">Panel Cliente</a>
                     <a href="Views/ticket-display/index.html" target="_blank" class="btn btn-primary">Panel General</a>
                 </div>
             </div>
