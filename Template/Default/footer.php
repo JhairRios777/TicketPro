@@ -6,27 +6,73 @@
             <div class="row">
                 <div class="col-md-4 mb-3 mb-md-0">
                     <h5 class="mb-3">
-                        <i class="fas fa-cube me-2"></i>TicketPro
+                        <img class="img-logo-selection" width="40" height="40" src="../Content/Demo/img/LOGO_TP_BLANCO_bg.png" alt=""></i>TicketPro
                     </h5>
-                    <p class="text-muted">Su solución permite mejorar la eficiencia, reducir tiempos de espera y optimizar los procesos en instituciones con alto volumen de usuarios.</p>
+                    <p class="text-muted">Su solución permite mejorar la eficiencia, reducir tiempos de espera y optimizar los procesos en instituciones con alto volumen de usuarios</p>
                 </div>
                 <div class="col-md-4 mb-3 mb-md-0">
-                    <h5 class="mb-3">Quienes Somos</h5>
-                    <p class="text-muted">TicketPro es una plataforma innovadora diseñada para gestionar y optimizar la atención al cliente en instituciones con alto volumen de usuarios.</p>
-                </div>
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h5 class="mb-3">Misión</h5>
-                    <p class="text-muted">Brindar soluciones tecnológicas eficientes que mejoren la experiencia del cliente y optimicen los procesos de atención en instituciones de alto tráfico.</p>
-                </div>
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h5 class="mb-3">Visión</h5>
-                    <p class="text-muted">Ser la plataforma líder en gestión de atención al cliente, reconocida por su innovación, eficiencia y capacidad para transformar la experiencia del usuario en instituciones de todo el mundo.</p>
+                    <h5 class="mb-3">Sobre Nosotros</h5>
+                    <ul class="list-unstyled">
+    
+                        <li>
+                            <a href="#quienesContent" 
+                            data-bs-toggle="collapse"
+                            aria-expanded="false"
+                            class="d-block">
+                                Quiénes Somos
+                            </a>
+
+                            <ul class="collapse ps-3" id="quienesContent">
+                                <li>
+                                    TicketPro es una plataforma innovadora diseñada para gestionar y optimizar la 
+                                    atención al cliente en instituciones con alto volumen de usuarios.
+                                </li>
+                            </ul>
+                        </li>
+
+                      
+                        <li>
+                            <a href="#misionContent" 
+                            data-bs-toggle="collapse"
+                            aria-expanded="false"
+                            class="d-block">
+                                Misión
+                            </a>
+
+                            <ul class="collapse ps-3" id="misionContent">
+                                <li>
+                                    Brindar soluciones tecnológicas eficientes que mejoren la experiencia del cliente
+                                    y optimicen los procesos de atención en instituciones de alto tráfico.
+                                </li>
+                            </ul>
+                        </li>
+
+                       
+                        <li>
+                            <a href="#visionContent" 
+                            data-bs-toggle="collapse"
+                            aria-expanded="false"
+                            class="d-block">
+                                Visión
+                            </a>
+
+                            <ul class="collapse ps-3" id="visionContent">
+                                <li>
+                                    Ser la plataforma líder en gestión de atención al cliente, reconocida por su innovación,
+                                    fiabilidad y capacidad para transformar la experiencia del usuario en instituciones de 
+                                    alto volumen.
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+
                 </div>
                 <div class="col-md-4">
                     <h5 class="mb-3">Contacto</h5>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <i class="fas fa-envelope me-2"></i>Soportecnico@ticketpro.hn
+                            <i class="fas fa-envelope me-2"></i>soportetecnico@ticketpro.hn
                         </li>
                         <li class="mb-2">
                             <i class="fas fa-phone me-2"></i>+504 9659-5294
