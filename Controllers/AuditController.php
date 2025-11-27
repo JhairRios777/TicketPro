@@ -23,7 +23,7 @@
             }
 
             // try to load FPDF
-            $fpdfPath = ROOT . 'lib' . DS . 'fpdf.php';
+            $fpdfPath = ROOT . 'Vendor' . DS . 'fpdf' . DS . 'fpdf.php';
             if (!is_readable($fpdfPath)) {
                 echo "FPDF no encontrado en 'lib/fpdf.php'. Coloca fpdf.php en la carpeta lib/ para generar PDFs.";
                 return;

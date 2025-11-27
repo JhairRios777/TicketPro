@@ -50,7 +50,7 @@ function fetchName($pdo, $table, $id) {
 $serviceName = fetchName($Conexion, 'Services', $service_id);
 $clientTypeName = fetchName($Conexion, 'ClientTypes', $client_type_id);
 
-$prefix = 'T'; // default
+$prefix = 'C'; // default
 $serviceLower = strtolower($serviceName ?? '');
 $clientLower = strtolower($clientTypeName ?? '');
 
@@ -87,7 +87,21 @@ $entity->id = $nextIdInt; // SP_Ticket expects id
 $entity->ticket_code = $ticket_code;
 $entity->service_id = (int)$service_id;
 $entity->client_type_id = (int)$client_type_id;
-$entity->status_id = 1; // default status
+// Determine status id for 'En espera' dynamically (fallback to 1)
+$status_id = 1;
+try {
+    $sstmt = $Conexion->prepare("SELECT id FROM TicketStatuses WHERE LOWER(name) LIKE :pattern LIMIT 1");
+    $pattern = '%espera%';
+    $sstmt->bindParam(':pattern', $pattern);
+    $sstmt->execute();
+    $sr = $sstmt->fetch(\PDO::FETCH_ASSOC);
+    if ($sr && isset($sr['id'])) {
+        $status_id = (int)$sr['id'];
+    }
+} catch (\Exception $e) {
+    // keep fallback 1
+}
+$entity->status_id = $status_id; // default status (En espera if present)
 // kiosk user: use 'General' user if exists (username 'general')
 try {
     $u = $Conexion->prepare("SELECT id FROM Users WHERE username = 'general' LIMIT 1");
@@ -111,7 +125,7 @@ try {
 // Audit
 try {
     $audit = new \Models\Audit();
-    $audit->log(null, null, $entity->id, 'CREADO', 'Ticket creado desde kiosk: ' . $entity->ticket_code);
+    $audit->log(null, null, $entity->id, 'CREADO', 'Ticket creado desde: ' . $entity->ticket_code);
 } catch (\Exception $e) {
     // ignore
 }
