@@ -25,6 +25,10 @@
 
         <div class="pulleft">
             <a href='/User/Registry/' type="button" class="btn btn-sm btn-primary">Registrar Usuario</a>
+
+            <a href='/Report/UserReport' target="_blank" class="btn btn-sm btn-secondary me-2">
+                <i class="fa fa-file-pdf"></i> Generar Reporte PDF
+            </a>
         </div>
     </div>
 

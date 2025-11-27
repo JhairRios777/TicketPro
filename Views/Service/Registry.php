@@ -10,7 +10,7 @@
                         <input type="hidden" name="Registrar" id="Registrar" value="1">
 
                         <div class="form-group">
-                            <input require type="text" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
+                            <input require type="hidden" name="id" id="id" class="form-control" readonly value="<?php echo $JData->id; ?>">
                         </div> <br>
                         
                         <div class="form-group">
@@ -25,7 +25,7 @@
 
                         <div class="form-group">
                             <a href="/Service" class="btn btn-secondary">Regresar</a>
-                            <button type="submit" class="btn btn-primary">Aceptar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
                         </div>
 
                     </form>

@@ -59,7 +59,7 @@
 
                     <div class="form-group">
                         <a href="/ServiceDesk" class="btn btn-secondary">Regresar</a>
-                        <button type="submit" class="btn btn-primary">Aceptar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
 
                     
