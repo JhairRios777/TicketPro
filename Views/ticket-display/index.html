@@ -110,6 +110,49 @@
         document.getElementById('clock').textContent = `${h}:${m} p.m.`;
     }
     updateClock(); setInterval(updateClock,60000);
+    
+    // Fetch tickets (abierto + espera) and update display every 5 seconds
+    async function refreshTickets(){
+        try {
+            const body = new URLSearchParams();
+            body.append('uid','consultasAPI');
+            body.append('pw','API*Data123*');
+
+            const res = await fetch('/APIR/index.php?method=list_display_tickets', { method: 'POST', body });
+            if (!res.ok) throw new Error('HTTP '+res.status);
+            const json = await res.json();
+            if (!json.success) throw new Error(json.message || 'API error');
+
+            const current = json.current;
+            const queue = json.queue || [];
+
+            const ticketNumEl = document.querySelector('.ticket-num');
+            if (current) {
+                ticketNumEl.textContent = current.code;
+            } else if (queue.length>0) {
+                ticketNumEl.textContent = queue[0].code;
+            } else {
+                ticketNumEl.textContent = '--';
+            }
+
+            // populate next two rows
+            const tbody = document.querySelector('.table-tickets tbody');
+            tbody.innerHTML = '';
+
+            // show next two from queue (if current was taken from queue, queue already excludes it)
+            const toShow = queue.slice(0,2);
+            for (let i=0;i<toShow.length;i++){
+                const tr = document.createElement('tr');
+                const td1 = document.createElement('td'); td1.className='h5'; td1.style.fontWeight='800'; td1.style.color='#b71c29'; td1.style.textAlign='center'; td1.textContent = toShow[i].code;
+                const td2 = document.createElement('td'); td2.className='h5'; td2.style.fontWeight='800'; td2.style.color='var(--theme-red-primary)'; td2.style.textAlign='center'; td2.textContent = toShow[i].service || '';
+                tr.appendChild(td1); tr.appendChild(td2); tbody.appendChild(tr);
+            }
+
+        } catch (err) {
+            console.error('Error refreshing tickets:', err);
+        }
+    }
+    refreshTickets(); setInterval(refreshTickets, 5000);
     </script>
 </body>
 </html>

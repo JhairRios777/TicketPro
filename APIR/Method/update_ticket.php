@@ -85,6 +85,7 @@ try {
     }
 
     // perform update
+    // When taking a ticket, update date_time to NOW() so we can track when it was taken
     $sql = "UPDATE Tickets SET status_id = :status_id";
     $params = [':status_id' => $newStatusId, ':id' => $id];
     if ($action === 'change_service' || strpos($action, 'cambiar') !== false) {
@@ -93,9 +94,18 @@ try {
     }
     // Optionally set the user taking the ticket to current session user
     $currentUserId = isset($_SESSION['system']['user_id']) ? $_SESSION['system']['user_id'] : null;
-    if ($action === 'take' && $currentUserId) {
-        $sql .= ", user_id = :user_id";
-        $params[':user_id'] = $currentUserId;
+    if ($action === 'take') {
+        // set taken timestamp
+        $sql .= ", date_time = NOW()";
+        if ($currentUserId) {
+            $sql .= ", user_id = :user_id";
+            $params[':user_id'] = $currentUserId;
+        }
+    } else {
+        if ($action === 'take' && $currentUserId) {
+            $sql .= ", user_id = :user_id";
+            $params[':user_id'] = $currentUserId;
+        }
     }
     $sql .= " WHERE id = :id";
 
