@@ -6,32 +6,30 @@
             <div class="row">
                 <div class="col-md-4 mb-3 mb-md-0">
                     <h5 class="mb-3">
-                        <i class="fas fa-cube me-2"></i>Sistema Web
+                        <i class="fas fa-cube me-2"></i>TicketPro
                     </h5>
-                    <p class="text-muted">Plantilla moderna con Bootstrap 5.0.2 y múltiples temas personalizables.</p>
+                    <p class="text-muted">Su solución permite mejorar la eficiencia, reducir tiempos de espera y optimizar los procesos en instituciones con alto volumen de usuarios.</p>
                 </div>
                 <div class="col-md-4 mb-3 mb-md-0">
-                    <h5 class="mb-3">Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-light text-decoration-none">
-                            <i class="fas fa-chevron-right me-2"></i>Inicio
-                        </a></li>
-                        <li><a href="#" class="text-light text-decoration-none">
-                            <i class="fas fa-chevron-right me-2"></i>Dashboard
-                        </a></li>
-                        <li><a href="#" class="text-light text-decoration-none">
-                            <i class="fas fa-chevron-right me-2"></i>Configuración
-                        </a></li>
-                    </ul>
+                    <h5 class="mb-3">Quienes Somos</h5>
+                    <p class="text-muted">TicketPro es una plataforma innovadora diseñada para gestionar y optimizar la atención al cliente en instituciones con alto volumen de usuarios.</p>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5 class="mb-3">Misión</h5>
+                    <p class="text-muted">Brindar soluciones tecnológicas eficientes que mejoren la experiencia del cliente y optimicen los procesos de atención en instituciones de alto tráfico.</p>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5 class="mb-3">Visión</h5>
+                    <p class="text-muted">Ser la plataforma líder en gestión de atención al cliente, reconocida por su innovación, eficiencia y capacidad para transformar la experiencia del usuario en instituciones de todo el mundo.</p>
                 </div>
                 <div class="col-md-4">
                     <h5 class="mb-3">Contacto</h5>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <i class="fas fa-envelope me-2"></i>info@sistemaweb.com
+                            <i class="fas fa-envelope me-2"></i>Soportecnico@ticketpro.hn
                         </li>
                         <li class="mb-2">
-                            <i class="fas fa-phone me-2"></i>+1 234 567 890
+                            <i class="fas fa-phone me-2"></i>+504 9659-5294
                         </li>
                         <li>
                             <div class="mt-2">
@@ -48,7 +46,7 @@
             <div class="row">
                 <div class="col-12 text-center">
                     <p class="mb-0 text-muted">
-                        &copy; 2024 Sistema Web. Todos los derechos reservados.
+                        &copy; 2025 TicketPro. Todos los derechos reservados.
                     </p>
                 </div>
             </div>
