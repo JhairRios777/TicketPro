@@ -22,8 +22,8 @@
     </header>
     <main class="main">
         <h1 style="color:var(--theme-red-primary);font-weight:800;font-size:3rem">BIENVENIDO</h1>
-        <button class="big-btn">General</button>
-        <button class="big-btn">Preferencial</button>
+        <button class="big-btn" onclick="location.href='/Views/take-ticket/index.html?client_type=general'">General</button>
+        <button class="big-btn" onclick="location.href='/Views/take-ticket/index.html?client_type=preferencial'">Preferencial</button>
     </main>
     <script>function updateClock(){const d=new Date();const h=d.getHours().toString().padStart(2,'0');const m=d.getMinutes().toString().padStart(2,'0');document.getElementById('clock').textContent = `${h}:${m} p.m.`;}updateClock();setInterval(updateClock,60000);</script>
 </body>

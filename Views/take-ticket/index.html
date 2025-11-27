@@ -23,6 +23,15 @@
     <main class="main container text-center">
         <div class="lead-text">Tome su ticket</div>
         <div class="big-arrow">&#8595;</div>
+
+        <div id="steps" style="width:100%;max-width:640px;margin-top:2rem">
+            <div id="service-list" style="display:flex;flex-direction:column;align-items:center;gap:1rem">
+                <button class="big-btn" data-service="caja">Caja</button>
+                <button class="big-btn" data-service="atencion">Atención al Cliente</button>
+            </div>
+
+            <div id="message" style="margin-top:1.5rem;display:none"></div>
+        </div>
     </main>
 
     <script>
@@ -33,6 +42,78 @@
         document.getElementById('clock').textContent = `${h}:${m} p.m.`;
     }
     updateClock(); setInterval(updateClock,60000);
+
+    // Read client_type from querystring (set by selection page)
+    function getQueryParam(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+    }
+
+    const clientTypeParam = (getQueryParam('client_type') || 'general').toLowerCase();
+
+    // Maps: adjust these IDs to match your DB if different
+    const clientTypeMap = {
+        'general': 1,
+        'preferencial': 2,
+        'preferential': 2
+    };
+
+    const serviceMap = {
+        'caja': 1,
+        'atencion': 2,
+        'atención': 2
+    };
+
+    function showMessage(text, isError) {
+        const el = document.getElementById('message');
+        el.style.display = 'block';
+        el.style.color = isError ? '#b02a37' : '#0b6e3a';
+        el.textContent = text;
+    }
+
+    document.querySelectorAll('#service-list .big-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const serviceKey = btn.getAttribute('data-service');
+            const serviceId = serviceMap[serviceKey];
+            const clientTypeId = clientTypeMap[clientTypeParam] || clientTypeMap['general'];
+
+            if (!serviceId) {
+                showMessage('Servicio no configurado. Contacte al administrador.', true);
+                return;
+            }
+
+            showMessage('Generando su ticket...');
+
+            try {
+                const form = new FormData();
+                form.append('service_id', serviceId);
+                form.append('client_type_id', clientTypeId);
+                // APIR basic API credentials (required when no session)
+                form.append('uid', 'consultasAPI');
+                form.append('pw', 'API*Data123*');
+
+                const resp = await fetch('/APIR/index.php?method=create_ticket', { method: 'POST', body: form });
+                const data = await resp.json();
+                if (!data || !data.success) {
+                    showMessage('Error al crear ticket: ' + (data && data.message ? data.message : 'Respuesta inválida'), true);
+                    return;
+                }
+
+                showMessage('Ticket creado: ' + data.ticket_code + '. Abriendo recibo...');
+
+                // Open PDF in new tab and then return to selection
+                const pdfUrl = data.pdf_url || ('/APIR/index.php?method=ticket_pdf&id=' + encodeURIComponent(data.id));
+                window.open(pdfUrl, '_blank');
+
+                // Wait briefly then go back to selection
+                setTimeout(() => { window.location.href = '/Views/selection/index.html'; }, 1200);
+
+            } catch (err) {
+                console.error(err);
+                showMessage('Error al crear ticket: ' + err.message, true);
+            }
+        });
+    });
     </script>
 </body>
 </html>
